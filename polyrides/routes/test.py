@@ -55,8 +55,8 @@ class Test(Resource):
     def _validate(self, item: Dict) -> bool:
         """Check if the given Test item has valid fields and a unique ID.
 
-        In an actual situation you would want to raise an Exception or provide more data, but this
-        is just an example so roll with it.
+        In an actual situation you would want to create and raise a custom Exception to provide more
+        data, but this is just an example so chill, damn.
 
         Args:
             item (dict): The data parsed from a POST request.
@@ -67,12 +67,12 @@ class Test(Resource):
         item_id = item['id']
 
         if not item_id:
-            return False
+            raise Exception('Bad Request: empty ID.')
         if not item['msg']:
-            return False
+            raise Exception('Bad Request: empty message.')
         # Check if the item ID is not unique.
         if item_id in (saved_item['id'] for saved_item in self.data):
-            return False
+            raise Exception('Bad Request: duplicate ID.')
 
         return True
 
@@ -105,11 +105,14 @@ class Test(Resource):
         """
         item = _parse_request()
         # If the item matches the expected format, add it to the collection and save it.
-        if self._validate(item):
-            # Add the item to the data and sort by ID.
-            updated_data = sorted(self.data + [item], key=lambda item: item['id'])
-            self._write(updated_data)
-            return '', 201  # Return an empty response with HTTP Status 201, indicating 'Created'
-
-        # Return HTTP Status 400, indicating 'Bad Request'
-        return 'Boo, your request sucks, no one likes it', 400
+        try:
+            if self._validate(item):
+                # Add the item to the data and sort by ID.
+                updated_data = sorted(self.data + [item], key=lambda item: item['id'])
+                self._write(updated_data)
+                return jsonify(''), 201  # Return an empty response with HTTP Status 201, indicating 'Created'
+            else:
+                return 'Actually the code should never get here I guess this is bad design', 400
+        except Exception as e:
+            # Return HTTP Status 400, indicating 'Bad Request'
+            return str(e), 400

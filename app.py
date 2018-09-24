@@ -60,7 +60,8 @@ def main():
     # Of course, we don't want these messages to appear in production since it will reveal details
     # about how our code works to end users.
     app_args = {
-        'debug': args.debug
+        'debug': args.debug,
+        'port': 5000
     }
 
     # These are keyword args passed to the flask_restful.Api constructor.

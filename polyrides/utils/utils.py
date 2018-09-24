@@ -82,10 +82,10 @@ def root_join(*path: str) -> str:
 
     Example:
         On a Unix-based OS:
-        root_join('test') -> '/path/to/polyrides/polyrides-api/polyrides/test'
+        root_join('test') -> '/path/to/polyrides-api/polyrides/test'
 
         On Windows: (-_-)
-        root_join('data', 'test.json') -> '\\path\\to\\polyrides\\polyrides-api\\polyrides\\data\\test.json'
+        root_join('data', 'test.json') -> '\\path\\to\\polyrides-api\\polyrides\\data\\test.json'
     """
     base = os.path.abspath(os.path.dirname(__name__))
     return os.path.join(base, _ROOT_DIR, *path)

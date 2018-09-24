@@ -26,23 +26,23 @@ This assumes you are on a Unix-based OS. If you are on Windows then IDK.
     ```bash
     $ pwd
     /path/to/workspace/
-    $ git clone git@github.com:karibennett/polyrides.git
-    $ cd polyrides
+    $ git clone git@github.com:karibennett/polyrides-api.git
+    $ cd polyrides-api
     $ ls
     Pipfile  Pipfile.lock  README.md    # etc.
     ```
 2. Install requirements:
     ```bash
     $ pwd
-    /path/to/workspace/polyrides
+    /path/to/workspace/polyrides-api
     $ pipenv install
     ```
 3. Run it:
     ```bash
     $ pwd 
-    /path/to/workspace/polyrides
+    /path/to/workspace/polyrides-api
     $ pipenv shell # This will open a shell within virtualenv.
-    $ python app.py
+    (polyrides-api-xx) $ python app.py
     ```
 4. Try it out. _(In another terminal)_:
 - GET the index:

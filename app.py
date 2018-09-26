@@ -36,7 +36,7 @@ def _parse_args() -> argparse.Namespace:
                         action='store_true',
                         default=False)
     parser.add_argument('--example_value',
-                        help="Passe an example value to this application. It doesn't do anything, but this illustrates how arguments are accessed.")
+                        help="Pass an example value to this application. It doesn't do anything, but this illustrates how arguments are accessed.")
     return parser.parse_args()
 
 

@@ -55,10 +55,13 @@ This assumes you are on a Unix-based OS. If you are on Windows then IDK.
     ```
 - POST a new message:
     ```bash
-    $ curl localhost:5000/test \
-           -X POST \
-           -d '{"id": 2, "msg": "Kari is so thirsty."}' \
-           -H "Content-Type: application/json"
+    $ curl -v -X POST \
+           localhost:5000/test \
+           -H "Content-Type: application/json" \
+           -d '{
+             "id": 2,
+             "msg": "Kari is so thirsty."
+           }'
     ```
 - GET test messages again (now with your new message!):
     ```bash
@@ -66,17 +69,22 @@ This assumes you are on a Unix-based OS. If you are on Windows then IDK.
     ```
 - POST an empty message, get an error:
     ```bash
-    $ curl localhost:5000/test \
-           -X POST \
-           -d '{"id": 3}' \
-           -H "Content-Type: application/json"
+    $ curl -v -X POST \
+           localhost:5000/test \
+           -H "Content-Type: application/json" \
+           -d '{
+             "id": 3
+           }'
     ```
 - POST a message with a duplicate ID, get an error:
     ```bash
-    $ curl localhost:5000/test \
-           -X POST \
-           -d '{"id": 1, "msg": "Dude, this ID already exists."}' \
-           -H "Content-Type: application/json"
+    $ curl -v -X POST \
+           localhost:5000/test \
+           -H "Content-Type: application/json" \
+           -d '{
+             "id": 1,
+             "msg": "Dude, this ID already exists."
+           }'
     ```
     Note: If all of this `curl`ing seems tedious, look into [Postman](https://www.getpostman.com/).
 5. ??????

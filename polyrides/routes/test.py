@@ -9,7 +9,7 @@ from typing import Dict, List
 from flask import jsonify
 from flask_restful import reqparse, Resource
 
-from ..utils.utils import load_json, root_join
+from polyrides.utils import load_json, root_join
 
 
 def _parse_request() -> Dict:

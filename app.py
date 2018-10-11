@@ -1,13 +1,14 @@
 """This is the main driver and entrypoint for the polyrides API.
 
-This file provides functionality for setting up and running our Flask app.
+Sets up and runs our Flask app.
 """
 import argparse
 
 from flask import Flask, jsonify
 from flask_restful import Api, Resource
 
-from polyrides.routes.test import Test
+from polyrides.routes import test
+from polyrides.routes import users
 
 
 class Index(Resource):
@@ -76,7 +77,9 @@ def main():
     # Set the Index resource we defined above as the handler for requests to the {base_url}.
     api.add_resource(Index, '/')
     # Set the Test resource defined in routes/test.py as the handler for all requests to {base_url}/test.
-    api.add_resource(Test, '/test')
+    api.add_resource(test.Test, '/test')
+    # Do the same for the Users resource. This is another way to reference a module in routes.
+    api.add_resource(users.Users, '/users')
     # When a new resource is created, it must be added here so that our app knows about it.
 
     # With setup complete, run the application.

@@ -9,7 +9,7 @@ from typing import Dict, List
 from flask import jsonify
 from flask_restful import reqparse, Resource
 
-from polyrides.utils import load_json, root_join
+from polyrides import util
 
 
 def _parse_request() -> Dict:
@@ -49,8 +49,8 @@ class Test(Resource):
         This method is called every time the endpoint receives a request.
         """
         print('Called Test.__init__.')
-        self._data_file = root_join('data', 'test.json')
-        self.data = load_json(self._data_file)
+        self._data_file = util.root_join('data', 'test.json')
+        self.data = util.load_json(self._data_file)
 
     def _write(self, data: List):
         """Serialize data, persisting it to some permanent storage medium.

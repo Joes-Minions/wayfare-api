@@ -1,4 +1,6 @@
+"""Contains the definition of a class for wrapping interactions with a JSON data file."""
 import json
+import os
 import typing
 
 from polyrides import util
@@ -14,12 +16,12 @@ class JsonWrapper(object):
             data_location (str): Path to directory containing JSON data.
             indent (int): Size of indent to use in JSON file.
         """
-        self._data_file_path = util.root_join('data', data_name + '.json')
+        self._data_file_path = os.path.join(data_location, data_name + '.json')
         self._indent = indent
 
     def read(self) -> list:
         """Read all items from the JSON file.
-        
+
         Returns:
             (list): A list of all items contained in the file.
         """
@@ -29,7 +31,7 @@ class JsonWrapper(object):
 
     def write(self, items: list):
         """Write the given items to the JSON file. Overwrites the file.
-        
+
         Args:
             items (list): The items to write to the file.
         """
@@ -64,7 +66,7 @@ class JsonWrapper(object):
 
         Args:
             predicate (function): Function that takes a dict and returns a boolean.
-        
+
         Yields:
             (dict): The next item that passes the predicate.
         """
@@ -100,6 +102,10 @@ class JsonWrapper(object):
         new_items = [updated_item if predicate(item) else item for item in all_items]
         self.write(new_items)
         return all_items != new_items
+
+    def nuke(self):
+        """Delete all items."""
+        self.write([])
 
     def __repr__(self) -> str:
         return "JSON Wrapper for '{}'".format(self._data_file_path)

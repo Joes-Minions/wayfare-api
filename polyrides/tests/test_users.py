@@ -129,6 +129,20 @@ class TestUserById(unittest.TestCase):
         for user in _TEST_USERS:
             requests.post(self.endpoint, user)
 
+    def test_get_first_user(self):
+        first_user_id = 1
+        first_user = {
+            'id': first_user_id,
+            **_TEST_USERS[0]
+        }
+        response = requests.get('{}/{}'.format(self.endpoint, first_user_id)).json()
+        self.assertEqual(response, first_user)
+
+    def test_get_nonexistent_id(self):
+        nonexistent_id = 9001
+        response = requests.get('{}/{}'.format(self.endpoint, nonexistent_id))
+        self.assertEqual(response.status_code, 404)
+
     def delete_first_user(self):
         first_user_id = 1
         requests.delete('{}/{}'.format(self.endpoint, first_user_id)).json()

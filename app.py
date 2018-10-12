@@ -80,6 +80,7 @@ def main():
     api.add_resource(test.Test, '/test')
     # Do the same for the Users resource. This is another way to reference a module in routes.
     api.add_resource(users.Users, '/users')
+    api.add_resource(users.UserById, '/users/<int:user_id>')
     # When a new resource is created, it must be added here so that our app knows about it.
 
     # With setup complete, run the application.

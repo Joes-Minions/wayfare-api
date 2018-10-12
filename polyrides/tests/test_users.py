@@ -55,7 +55,7 @@ class TestUsers(unittest.TestCase):
             'password': 'test'
         })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), "Missing field: 'first_name'")
+        self.assertIn('first_name', response.json()['message'])
 
     def test_post_missing_last_name(self):
         response = requests.post(self.endpoint, {
@@ -64,7 +64,7 @@ class TestUsers(unittest.TestCase):
             'password': 'test'
         })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), "Missing field: 'last_name'")
+        self.assertIn('last_name', response.json()['message'])
 
     def test_post_missing_email(self):
         response = requests.post(self.endpoint, {
@@ -73,7 +73,7 @@ class TestUsers(unittest.TestCase):
             'password': 'test'
         })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), "Missing field: 'email'")
+        self.assertIn('email', response.json()['message'])
 
     def test_post_missing_password(self):
         response = requests.post(self.endpoint, {
@@ -82,7 +82,7 @@ class TestUsers(unittest.TestCase):
             'email': 'test'
         })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), "Missing field: 'password'")
+        self.assertIn('password', response.json()['message'])
 
     def test_post_duplicate_email(self):
         duplicate_email = _TEST_USERS[0]['email']
@@ -93,9 +93,9 @@ class TestUsers(unittest.TestCase):
             'password': 'test'
         })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), "Duplicate email: '{}'".format(duplicate_email))
+        self.assertEqual(response.json()['message'], "Duplicate email: '{}'".format(duplicate_email))
 
-    def test_post(self):
+    def test_successful_post(self):
         new_user = {
             'first_name': 'test',
             'last_name': 'test',
@@ -110,6 +110,39 @@ class TestUsers(unittest.TestCase):
         })
         get_response = requests.get(self.endpoint).json()[-1]
         self.assertEqual(get_response, new_user)
+
+    def test_put_not_allowed(self):
+        response = requests.put(self.endpoint)
+        self.assertEqual(response.status_code, 405)
+
+
+class TestUserById(unittest.TestCase):
+    def setUp(self):
+        """Replace all source data with test user data."""
+        scheme = 'http://'
+        base_url = 'localhost'
+        port = 5000
+        route = 'users'
+        self.endpoint = '{}{}:{}/{}'.format(scheme, base_url, port, route)
+        # Clear source and load all test data.
+        requests.delete(self.endpoint)
+        for user in _TEST_USERS:
+            requests.post(self.endpoint, user)
+
+    def delete_first_user(self):
+        first_user_id = 1
+        requests.delete('{}/{}'.format(self.endpoint, first_user_id)).json()
+        all_users = requests.get(self.endpoint).json()
+        for user in all_users:
+            self.assertNotEqual(user['id'], first_user_id)
+
+    def delete_nonexistent_user(self):
+        nonexistent_id = 9001
+        requests.delete('{}/{}'.format(self.endpoint, nonexistent_id))
+        all_users = requests.get(self.endpoint).json()
+        self.assertEqual(len(all_users), len(_TEST_USERS))
+
+
 
 
 if __name__ == '__main__':

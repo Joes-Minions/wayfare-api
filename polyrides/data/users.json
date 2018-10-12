@@ -1,1 +1,37 @@
-[]
+[
+    {
+        "first_name": "Oliver",
+        "last_name": "Wang",
+        "email": "owang02@calpoly.edu",
+        "password": "password123",
+        "id": 1
+    },
+    {
+        "first_name": "Karissa",
+        "last_name": "Bennett",
+        "email": "kbenne09@calpoly.edu",
+        "password": "deadlifts",
+        "id": 2
+    },
+    {
+        "first_name": "Barack",
+        "last_name": "Obama",
+        "email": "test@example.com",
+        "password": "america",
+        "id": 3
+    },
+    {
+        "first_name": "Minh-Quan",
+        "last_name": "Tran",
+        "email": "mtran22@calpoly.edu",
+        "password": "Yeah, my password is really long.",
+        "id": 4
+    },
+    {
+        "first_name": "test",
+        "last_name": "test",
+        "email": "test",
+        "password": "test",
+        "id": 5
+    }
+]

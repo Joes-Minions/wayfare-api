@@ -8,32 +8,13 @@ Provides the following endpoints and methods:
 
     /users/{user_id}/
 """
+import flask
+import flask_restful
 import json
 
-from typing import Dict, List
-
-from flask import jsonify
-from flask_restful import reqparse, Resource
+from flask_restful import reqparse
 
 from polyrides.data.json_wrapper import JsonWrapper
-
-
-def _parse_request() -> Dict:
-    """Parse the JSON body of an HTTP POST request."""
-    parser = reqparse.RequestParser()
-    parser.add_argument('first_name',
-                        type=str,
-                        help="The user's given name.")
-    parser.add_argument('last_name',
-                        type=str,
-                        help="The user's family name.")
-    parser.add_argument('email',
-                        type=str,
-                        help="The user's email address.")
-    parser.add_argument('password',
-                        type=str,
-                        help="The user's chosen password.")
-    return parser.parse_args()
 
 
 class UserDAO(JsonWrapper):
@@ -114,8 +95,8 @@ class UserDAO(JsonWrapper):
         return self.read()
 
 
-class Users(Resource):
-    """Resource for interacting with user data."""
+class Users(flask_restful.Resource):
+    """Resource for interacting with all user data."""
 
     def __init__(self):
         """Initialize the Resource, creating a database-like interface to the user data."""
@@ -123,35 +104,72 @@ class Users(Resource):
 
     def get(self):
         """Retrieve all user resources."""
-        return jsonify(self.db.all_users())
+        all_users = self.db.all_users()
+        return flask.jsonify(all_users)
 
     def post(self):
-        """Add a user resource.
-
-        All of the following fields are required for a user object:
-        - first_name
-        - last_name
-        - email  -- must be unique
-        - password
-        """
-        user = _parse_request()
+        """Add a user resource."""
+        user = self._parse_request()
         try:
-            if not user['first_name']:
-                raise Exception("Missing field: 'first_name'")
-            if not user['last_name']:
-                raise Exception("Missing field: 'last_name'")
-            if not user['email']:
-                raise Exception("Missing field: 'email'")
-            if not user['password']:
-                raise Exception("Missing field: 'password'")
-            if self.db.find_user_by_email(user['email']):
-                raise Exception("Duplicate email: '{}'".format(user['email']))
+            if self.db.find_user_by_email(user.email):
+                raise Exception("Duplicate email: '{}'".format(user.email))
 
             self.db.create_user(user)
             return '', 201
         except Exception as err:
-            return str(err), 400
+            error_message = {
+                'message': str(err)
+            }
+            return error_message, 400
 
     def delete(self):
         """Delete all user resources."""
         self.db.nuke()
+
+    @staticmethod
+    def _parse_request() -> dict:
+        """Parse the JSON body of an HTTP POST request."""
+        parser = reqparse.RequestParser(bundle_errors=True)
+        parser.add_argument('first_name', type=str, required=True,
+                            help="Missing field: 'first_name'")
+        parser.add_argument('last_name', type=str, required=True,
+                            help="Missing field: 'last_name'")
+        parser.add_argument('email', type=str, required=True,
+                            help="Missing field: 'email'")
+        parser.add_argument('password', type=str, required=True,
+                            help="Missing field: 'password'")
+        return parser.parse_args()
+
+
+class UserById(flask_restful.Resource):
+    """Resource for interacting with user data given a user ID."""
+    def __init__(self):
+        """Initialize the Resource, creating a database-like interface to the user data."""
+        self.db = UserDAO()
+
+    def get(self, user_id: int) -> dict:
+        """Retrieve user with the given ID.
+
+        Args:
+            user_id (int): ID of the user to fetch.
+
+        Returns:
+            (dict): User with the given ID as a dictionary.
+        """
+        return  # TODO
+
+    def put(self, user_id: int):
+        """Update user with the given ID.
+
+        Args:
+            user_id (int): ID of the user to delete.
+        """
+        pass
+
+    def delete(self, user_id: int):
+        """Delete user with the given ID.
+
+        Args:
+            user_id (int): ID of the user to delete.
+        """
+        pass  # TODO

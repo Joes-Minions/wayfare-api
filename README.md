@@ -1,7 +1,7 @@
 PolyRides API
 =============
 
-The backend of PolyRides, an app for delivering Kari to her dick appointments.
+The backend of PolyRides, an app for connecting drivers and passengers for long distance road trips.
 
 ## Getting Started
 ### Pre-requisites

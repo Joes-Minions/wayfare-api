@@ -137,15 +137,15 @@ class Users(Resource):
         user = _parse_request()
         try:
             if not user['first_name']:
-                raise Exception('Required field: "first_name".')
+                raise Exception("Missing field: 'first_name'")
             if not user['last_name']:
-                raise Exception('Required field: "last_name".')
+                raise Exception("Missing field: 'last_name'")
             if not user['email']:
-                raise Exception('Required field: "email".')
+                raise Exception("Missing field: 'email'")
             if not user['password']:
-                raise Exception('Required field: "password".')
+                raise Exception("Missing field: 'password'")
             if self.db.find_user_by_email(user['email']):
-                raise Exception('Duplicate email: "{}".'.format(user['email']))
+                raise Exception("Duplicate email: '{}'".format(user['email']))
 
             self.db.create_user(user)
             return '', 201

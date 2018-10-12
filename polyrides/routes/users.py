@@ -17,6 +17,20 @@ from flask_restful import reqparse
 from polyrides.data.json_wrapper import JsonWrapper
 
 
+def _parse_user(require_all_fields: bool = False) -> dict:
+    """Parse a user from a request."""
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('first_name', type=str, required=require_all_fields,
+                        help="Missing field: 'first_name'")
+    parser.add_argument('last_name', type=str, required=require_all_fields,
+                        help="Missing field: 'last_name'")
+    parser.add_argument('email', type=str, required=require_all_fields,
+                        help="Missing field: 'email'")
+    parser.add_argument('password', type=str, required=require_all_fields,
+                        help="Missing field: 'password'")
+    return parser.parse_args()
+
+
 class UserDAO(JsonWrapper):
     """Data Access Object that provides methods for interacting with user data contained in a JSON file."""
 
@@ -86,6 +100,19 @@ class UserDAO(JsonWrapper):
         """
         return self.find(lambda user: user['last_name'] == name)
 
+    def update_user(self, new_user: dict, user_id: int = None):
+        """Update the given user.
+
+        Args:
+            new_user (dict): Updated user data.
+            user_id (int): (Optional) ID of the user to update. If not provided, 
+                           the user ID will be extrapolated from the user data.
+        """
+        match_id = user_id or new_user.get('id')
+        if match_id is None:
+            raise ValueError("No user ID provided and no ID could be extrapolated.")
+        self.update(lambda user: user['id'] == match_id, new_user)
+
     def all_users(self) -> list:
         """Retrieve all user objects from the data source.
 
@@ -109,7 +136,7 @@ class Users(flask_restful.Resource):
 
     def post(self):
         """Add a user resource."""
-        user = self._parse_request()
+        user = _parse_user(require_all_fields=True)
         try:
             if self.db.find_user_by_email(user.email):
                 raise Exception("Duplicate email: '{}'".format(user.email))
@@ -125,20 +152,6 @@ class Users(flask_restful.Resource):
     def delete(self):
         """Delete all user resources."""
         self.db.nuke()
-
-    @staticmethod
-    def _parse_request() -> dict:
-        """Parse the JSON body of an HTTP POST request."""
-        parser = reqparse.RequestParser(bundle_errors=True)
-        parser.add_argument('first_name', type=str, required=True,
-                            help="Missing field: 'first_name'")
-        parser.add_argument('last_name', type=str, required=True,
-                            help="Missing field: 'last_name'")
-        parser.add_argument('email', type=str, required=True,
-                            help="Missing field: 'email'")
-        parser.add_argument('password', type=str, required=True,
-                            help="Missing field: 'password'")
-        return parser.parse_args()
 
 
 class UserById(flask_restful.Resource):
@@ -162,9 +175,14 @@ class UserById(flask_restful.Resource):
         """Update user with the given ID.
 
         Args:
-            user_id (int): ID of the user to delete.
+            user_id (int): ID of the user to repace.
         """
-        pass
+        user = self.db.find_user_by_id(user_id)
+        if not user:
+            return '', 404
+        query_params = _parse_user(require_all_fields=False)
+        updated_user = {k: query_params.get(k) or user[k] for k in user}
+        pass  # TODO
 
     def delete(self, user_id: int):
         """Delete user with the given ID.

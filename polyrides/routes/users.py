@@ -120,7 +120,13 @@ class UserDAO(JsonWrapper):
             (list) All users stored in the data source.
         """
         return self.read()
+    def del_user_by_id(self, user_id: int):
+        """Delete the given user.
 
+        Args:
+            user_id (int): user_id of user to be deleted
+        """
+        self.delete(lambda user: user['id'] == user_id)
 
 class Users(flask_restful.Resource):
     """Resource for interacting with all user data."""
@@ -169,20 +175,24 @@ class UserById(flask_restful.Resource):
         Returns:
             (dict): User with the given ID as a dictionary.
         """
-        return  # TODO
+        user = self.db.find_user_by_id(user_id)
+        if not user:
+            return '', 404
+        return flask.jsonify(user)
 
     def put(self, user_id: int):
         """Update user with the given ID.
 
         Args:
-            user_id (int): ID of the user to repace.
+            user_id (int): ID of the user to replace.
         """
         user = self.db.find_user_by_id(user_id)
         if not user:
             return '', 404
         query_params = _parse_user(require_all_fields=False)
-        updated_user = {k: query_params.get(k) or user[k] for k in user}
-        pass  # TODO
+        user = {k: query_params.get(k) or user[k] for k in user}
+        self.db.update_user(user, user_id)
+        return 201
 
     def delete(self, user_id: int):
         """Delete user with the given ID.
@@ -190,4 +200,8 @@ class UserById(flask_restful.Resource):
         Args:
             user_id (int): ID of the user to delete.
         """
-        pass  # TODO
+        user = self.db.find_user_by_id(user_id)
+        if not user:
+            return '',404
+        self.db.del_user_by_id(user_id)
+        return 201

@@ -190,9 +190,9 @@ class UserById(flask_restful.Resource):
         if not user:
             return '', 404
         query_params = _parse_user(require_all_fields=False)
-        user = {k: query_params.get(k) or user[k] for k in user}
-        self.db.update_user(user, user_id)
-        return 201
+        updated_user = {k: query_params.get(k) or user[k] for k in user}
+        self.db.update_user(updated_user, user_id)
+        return '', 200
 
     def delete(self, user_id: int):
         """Delete user with the given ID.
@@ -204,4 +204,4 @@ class UserById(flask_restful.Resource):
         if not user:
             return '',404
         self.db.del_user_by_id(user_id)
-        return 201
+        return '',200

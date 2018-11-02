@@ -129,14 +129,42 @@ class TestUserById(unittest.TestCase):
         for user in _TEST_USERS:
             requests.post(self.endpoint, user)
 
-    def delete_first_user(self):
+    def test_get_first_user(self):
+        first_user_id = 1
+        first_user = {
+            'id': first_user_id,
+            **_TEST_USERS[0]
+        }
+        response = requests.get('{}/{}'.format(self.endpoint, first_user_id)).json()
+        self.assertEqual(response, first_user)
+
+    def test_get_nonexistent_id(self):
+        nonexistent_id = 9001
+        response = requests.get('{}/{}'.format(self.endpoint, nonexistent_id))
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_first_user(self):
+        first_user_id = 1
+        updated_first_user = {
+            'password': 'newpassword123',
+        }
+        requests.put('{}/{}'.format(self.endpoint, first_user_id), updated_first_user)
+        response = requests.get('{}/{}'.format(self.endpoint, first_user_id)).json()
+        self.assertEqual(response['password'], updated_first_user['password'])
+
+    def test_update_nonexistent_user(self):
+        nonexistent_id = 9001
+        response = requests.put('{}/{}'.format(self.endpoint, nonexistent_id))
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_first_user(self):
         first_user_id = 1
         requests.delete('{}/{}'.format(self.endpoint, first_user_id)).json()
         all_users = requests.get(self.endpoint).json()
         for user in all_users:
             self.assertNotEqual(user['id'], first_user_id)
 
-    def delete_nonexistent_user(self):
+    def test_delete_nonexistent_user(self):
         nonexistent_id = 9001
         requests.delete('{}/{}'.format(self.endpoint, nonexistent_id))
         all_users = requests.get(self.endpoint).json()

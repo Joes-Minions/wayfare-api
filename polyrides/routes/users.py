@@ -1,13 +1,5 @@
-"""Endpoint for interacting with user data.
+"""Flask-RESTful resources for interacting with user data."""
 
-Provides the following endpoints and methods:
-
-    /users/
-    - GET : Get all users.
-    - POST: Create a user.
-
-    /users/{user_id}/
-"""
 import flask
 import flask_restful
 import json

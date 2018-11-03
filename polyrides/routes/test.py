@@ -49,7 +49,7 @@ class Test(Resource):
         This method is called every time the endpoint receives a request.
         """
         print('Called Test.__init__.')
-        self._data_file = util.root_join('data', 'test.json')
+        self._data_file = util.root_join('data', 'json/test.json')
         self.data = util.load_json(self._data_file)
 
     def _write(self, data: List):

@@ -85,7 +85,7 @@ def main():
     # Set the Index resource we defined above as the handler for requests to the {base_url}.
     api.add_resource(Index, '/')
     # Set the Test resource defined in routes/test.py as the handler for all requests to {base_url}/test.
-    #pi.add_resource(test.Test, '/test')
+    # api.add_resource(test.Test, '/test')
     # Do the same for the Users resource. This is another way to reference a module in routes.
     #api.add_resource(users.Users, '/users')
     api.add_resource(sql_users.Users, '/users', endpoint='users' )

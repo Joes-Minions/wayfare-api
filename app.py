@@ -9,6 +9,8 @@ from flask_restful import Api, Resource
 
 from polyrides.routes import test
 from polyrides.routes import users
+from polyrides.routes import sql_users
+from flask import Flask
 
 
 class Index(Resource):
@@ -71,16 +73,24 @@ def main():
         'catch_all_404s': True
     }
 
+    from polyrides.data.db import session
+    # upon app shutdown, remove the current app context for the database
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        session.remove()
+
     # Construct the REST API object attached to our Flask app defined above.
     api = Api(app, **api_args)
 
     # Set the Index resource we defined above as the handler for requests to the {base_url}.
     api.add_resource(Index, '/')
     # Set the Test resource defined in routes/test.py as the handler for all requests to {base_url}/test.
-    api.add_resource(test.Test, '/test')
+    #pi.add_resource(test.Test, '/test')
     # Do the same for the Users resource. This is another way to reference a module in routes.
-    api.add_resource(users.Users, '/users')
-    api.add_resource(users.UserById, '/users/<int:user_id>')
+    #api.add_resource(users.Users, '/users')
+    api.add_resource(sql_users.Users, '/users', endpoint='users' )
+    api.add_resource(sql_users.UserById, '/users/<string:user_id>', endpoint='user')
+    # api.add_resource(users.UserById, '/users/<int:user_id>')
     # When a new resource is created, it must be added here so that our app knows about it.
 
     # With setup complete, run the application.

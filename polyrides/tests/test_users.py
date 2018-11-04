@@ -1,5 +1,7 @@
-import requests
+"""Unit tests for users endpoints and resources."""
 import unittest
+
+import requests
 
 _TEST_USERS = [
     {  # id: 1
@@ -29,6 +31,7 @@ _TEST_USERS = [
 ]
 
 class TestUsers(unittest.TestCase):
+    """Tests for the Users resource."""
     def setUp(self):
         """Replace all source data with test user data."""
         scheme = 'http://'
@@ -104,12 +107,15 @@ class TestUsers(unittest.TestCase):
         }
         post_response = requests.post(self.endpoint, new_user)
         self.assertEqual(post_response.status_code, 201)
-        self.assertEqual(post_response.json(), '')
+        # self.assertEqual(post_response.json(), '')
         new_user.update({
             'id': len(_TEST_USERS) + 1
         })
-        get_response = requests.get(self.endpoint).json()[-1]
-        self.assertEqual(get_response, new_user)
+        get_response = requests.get(self.endpoint)
+        self.assertEqual(get_response.status_code, 200)
+        expected_location = '{}/{}'.format(self.endpoint, new_user['id'])
+        # self.assertEqual(get_response.headers['Location'], expected_location)
+        self.assertEqual(get_response.json()[-1], new_user)
 
     def test_put_not_allowed(self):
         response = requests.put(self.endpoint)
@@ -117,6 +123,7 @@ class TestUsers(unittest.TestCase):
 
 
 class TestUserById(unittest.TestCase):
+    """Tests for the UserById resource."""
     def setUp(self):
         """Replace all source data with test user data."""
         scheme = 'http://'
@@ -135,8 +142,9 @@ class TestUserById(unittest.TestCase):
             'id': first_user_id,
             **_TEST_USERS[0]
         }
-        response = requests.get('{}/{}'.format(self.endpoint, first_user_id)).json()
-        self.assertEqual(response, first_user)
+        response = requests.get('{}/{}'.format(self.endpoint, first_user_id))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), first_user)
 
     def test_get_nonexistent_id(self):
         nonexistent_id = 9001
@@ -145,30 +153,35 @@ class TestUserById(unittest.TestCase):
 
     def test_update_first_user(self):
         first_user_id = 1
-        updated_first_user = {
+        updated_first_user = dict(_TEST_USERS[0])
+        updated_first_user.update({
             'password': 'newpassword123',
-        }
-        requests.put('{}/{}'.format(self.endpoint, first_user_id), updated_first_user)
-        response = requests.get('{}/{}'.format(self.endpoint, first_user_id)).json()
-        self.assertEqual(response['password'], updated_first_user['password'])
+        })
+        put_response = requests.put('{}/{}'.format(self.endpoint, first_user_id), updated_first_user)
+        self.assertEqual(put_response.status_code, 200)
+        get_response = requests.get('{}/{}'.format(self.endpoint, first_user_id))
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual(get_response.json()['password'], updated_first_user['password'])
 
-    def test_update_nonexistent_user(self):
-        nonexistent_id = 9001
-        response = requests.put('{}/{}'.format(self.endpoint, nonexistent_id))
-        self.assertEqual(response.status_code, 404)
+    # Rethinking how PUT on a nonexistent id should work.
+    # def test_update_nonexistent_user(self):
+    #     nonexistent_id = 9001
+    #     response = requests.put('{}/{}'.format(self.endpoint, nonexistent_id))
+    #     self.assertEqual(response.status_code, 404)
 
     def test_delete_first_user(self):
         first_user_id = 1
-        requests.delete('{}/{}'.format(self.endpoint, first_user_id)).json()
-        all_users = requests.get(self.endpoint).json()
-        for user in all_users:
+        response = requests.delete('{}/{}'.format(self.endpoint, first_user_id))
+        self.assertEqual(response.status_code, 200)
+        for user in requests.get(self.endpoint).json():
             self.assertNotEqual(user['id'], first_user_id)
 
     def test_delete_nonexistent_user(self):
         nonexistent_id = 9001
-        requests.delete('{}/{}'.format(self.endpoint, nonexistent_id))
-        all_users = requests.get(self.endpoint).json()
-        self.assertEqual(len(all_users), len(_TEST_USERS))
+        delete_response = requests.delete('{}/{}'.format(self.endpoint, nonexistent_id))
+        self.assertEqual(delete_response.status_code, 404)
+        get_response = requests.get(self.endpoint)
+        self.assertEqual(len(get_response.json()), len(_TEST_USERS))
 
 
 

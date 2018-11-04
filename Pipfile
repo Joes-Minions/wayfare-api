@@ -7,9 +7,11 @@ name = "pypi"
 flask = "*"
 flask-restful = "*"
 requests = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 pylint = "*"
+rope = "*"
 
 [requires]
 python_version = "3.7"

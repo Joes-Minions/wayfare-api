@@ -1,6 +1,5 @@
 """Flask-RESTful resources for interacting with user data."""
-# pylint: disable=E1101
-
+import flask
 import flask_restful
 
 from flask_restful import abort
@@ -8,10 +7,10 @@ from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
 
-from polyrides import db
 from polyrides.models.user import User
 
 
+_BASE_URL = 'users' 
 _USER_FIELDS = {
     'id': fields.Integer,
     'first_name': fields.String,
@@ -51,29 +50,25 @@ def _parse_user_from_request_body(require_all_fields: bool = False) -> dict:
 
 
 class Users(flask_restful.Resource):
-    """Resource for interacting with general user data."""
+    """Resource for interacting with `User` data."""
     @marshal_with(_USER_FIELDS)
     def get(self):
         """Get all users."""
-        users = db.session.query(User).all()
-        return users
+        return User.get_all()
 
-    # @marshal_with(_USER_FIELDS)
     def post(self):
         """Add a user."""
         parsed_user = _parse_user_from_request_body(require_all_fields=True)
-        user_with_email = db.session.query(User).filter(User.email == parsed_user.email).first()
-        if user_with_email:
+        if User.find_by_email(parsed_user.email):
             abort(400, message="Duplicate email: '{}'".format(parsed_user.email))
         user = User(**parsed_user)
-        db.session.add(user)
-        db.session.commit()
+        user.create()
+        # TODO: Attach a location header as a result of a successful POST request.
         return '', 201
 
     def delete(self):
         """Delete all users."""
-        db.session.query(User).delete()
-        db.session.commit()
+        User.delete_all()
         return '', 200
 
 
@@ -89,7 +84,7 @@ class UserById(flask_restful.Resource):
         Returns:
             User with the given id if found.
         """
-        user = db.session.query(User).filter(User.id == user_id).first()
+        user = User.find_by_id(user_id)
         if not user:
             abort(404, message="User {} does not exist".format(user_id))
         return user
@@ -104,16 +99,14 @@ class UserById(flask_restful.Resource):
             Updated User.
         """
         parsed_user = _parse_user_from_request_body(require_all_fields=True)
-        user = db.session.query(User).filter(User.id == user_id).first()
+        user = User.find_by_id(user_id)
         if user:
-            db.session.query(User).filter(User.id == user_id).update(parsed_user)
-            db.session.commit()
-            return user, 200
+            user.update(parsed_user)
+            return '', 200
         else:
             user = User(**parsed_user)
-            db.session.add(user)
-            db.session.commit()
-            return user, 201
+            user.create()
+            return '', 201
 
     def delete(self, user_id):
         """Delete user with the given id.
@@ -121,11 +114,9 @@ class UserById(flask_restful.Resource):
         Args:
             user_id (int): id of the user to delete
         """
-        user = db.session.query(User).filter(User.id == user_id).first()
+        user = User.find_by_id(user_id)
         if user:
-            db.session.query(User).filter(User.id == user_id).delete()
-            db.session.commit()
+            user.delete()
             return '', 200
         else:
-            return '', 404
-            # abort(404, message="User {} does not exist".format(user_id))
+            abort(404, message="User {} does not exist".format(user_id))

@@ -107,12 +107,14 @@ class TestUsers(unittest.TestCase):
         }
         post_response = requests.post(self.endpoint, new_user)
         self.assertEqual(post_response.status_code, 201)
-        self.assertEqual(post_response.json(), '')
+        # self.assertEqual(post_response.json(), '')
         new_user.update({
             'id': len(_TEST_USERS) + 1
         })
         get_response = requests.get(self.endpoint)
         self.assertEqual(get_response.status_code, 200)
+        expected_location = '{}/{}'.format(self.endpoint, new_user['id'])
+        # self.assertEqual(get_response.headers['Location'], expected_location)
         self.assertEqual(get_response.json()[-1], new_user)
 
     def test_put_not_allowed(self):
@@ -155,10 +157,11 @@ class TestUserById(unittest.TestCase):
         updated_first_user.update({
             'password': 'newpassword123',
         })
-        requests.put('{}/{}'.format(self.endpoint, first_user_id), updated_first_user)
-        response = requests.get('{}/{}'.format(self.endpoint, first_user_id))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['password'], updated_first_user['password'])
+        put_response = requests.put('{}/{}'.format(self.endpoint, first_user_id), updated_first_user)
+        self.assertEqual(put_response.status_code, 200)
+        get_response = requests.get('{}/{}'.format(self.endpoint, first_user_id))
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual(get_response.json()['password'], updated_first_user['password'])
 
     # Rethinking how PUT on a nonexistent id should work.
     # def test_update_nonexistent_user(self):

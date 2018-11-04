@@ -1,12 +1,10 @@
-"""Flask-SQLAlchemy model representing a User object.
-
-Provides convenience methods for performing database transactions.
-"""
+# pylint: disable=E1101
+"""Class wrapping a user table."""
 from polyrides import db
 
 
 class User(db.Model):
-    """Model representing a user."""
+    """Data access object providing a static interface to a user table."""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -15,23 +13,42 @@ class User(db.Model):
     email = db.Column(db.String(64))
     password = db.Column(db.String(64))
 
-    # def __init__(self, first_name=None, last_name=None, email=None, password=None):
-    #     self.first_name = first_name
-    #     self.last_name = last_name
-    #     self.email = email
-    #     self.password = password
-
     def create(self):
-        """Add this User to the database.
-        TODO: Maybe move all User creation functionality here."""
-        pass
+        """Add this `User` to the database."""
+        db.session.add(self)
+        db.session.commit()
 
-    @staticmethod
-    def find_by_id(user_id: int):
-        """Look up a user by id.
+    def update(self, new_fields: dict):
+        """Update this `User`.
 
         Args:
-            id (int): user id to search for.
+            new_fields (dict): Dict containing new values for this `User`.
+        """
+        db.session.query(User).filter(User.id == self.id).update(new_fields)
+        db.session.commit()
+
+    def delete(self):
+        """Delete this `User` from the database."""
+        db.session.query(User).filter(User.id == self.id).delete()
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        """Return all `User`s in the database."""
+        return db.session.query(User).all()
+
+    @staticmethod
+    def delete_all():
+        """Return all `User`s in the database."""
+        db.session.query(User).delete()
+        db.session.commit()
+
+    @staticmethod
+    def find_by_id(user_id: int) -> 'User':
+        """Look up a `User`s by id.
+
+        Args:
+            id (int): id to match.
 
         Returns:
             User with the given id if found.
@@ -39,13 +56,13 @@ class User(db.Model):
         return db.session.query(User).filter(User.id == user_id).first()
 
     @staticmethod
-    def find_by_email(email: str):
-        """Look up a user by email.
+    def find_by_email(email: str) -> 'User':
+        """Look up a `User` by email.
 
         Args:
-            email (str): user email to search for.
+            email (str): email to match.
 
         Returns:
-            User with the given email if found.
+            `User` with the given email if found.
         """
         return db.session.query(User).filter(User.email == email).first()

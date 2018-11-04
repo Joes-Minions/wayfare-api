@@ -1,11 +1,24 @@
 """Flask-RESTful resources for interacting with user data."""
+# pylint: disable=E1101
 
-import flask
 import flask_restful
 
+from flask_restful import abort
+from flask_restful import fields
+from flask_restful import marshal_with
 from flask_restful import reqparse
 
-from polyrides.data.dao import UserDAO
+from polyrides import db
+from polyrides.models.user import User
+
+
+_USER_FIELDS = {
+    'id': fields.Integer,
+    'first_name': fields.String,
+    'last_name': fields.String,
+    'email': fields.String,
+    'password': fields.String
+}
 
 
 def _parse_user_from_request_body(require_all_fields: bool = False) -> dict:
@@ -38,79 +51,81 @@ def _parse_user_from_request_body(require_all_fields: bool = False) -> dict:
 
 
 class Users(flask_restful.Resource):
-    """Resource for interacting with all user data."""
-
-    def __init__(self):
-        """Initialize the Resource, creating a database-like interface to the user data."""
-        self.db = UserDAO()
-
+    """Resource for interacting with general user data."""
+    @marshal_with(_USER_FIELDS)
     def get(self):
-        """Retrieve all user resources."""
-        all_users = self.db.all_users()
-        return flask.jsonify(all_users)
+        """Get all users."""
+        users = db.session.query(User).all()
+        return users
 
+    # @marshal_with(_USER_FIELDS)
     def post(self):
-        """Add a user resource."""
-        user = _parse_user_from_request_body(require_all_fields=True)
-        try:
-            if self.db.find_user_by_email(user.email):
-                raise Exception("Duplicate email: '{}'".format(user.email))
-
-            self.db.create_user(user)
-            return '', 201
-        except Exception as err:
-            error_message = {
-                'message': str(err)
-            }
-            return error_message, 400
+        """Add a user."""
+        parsed_user = _parse_user_from_request_body(require_all_fields=True)
+        user_with_email = db.session.query(User).filter(User.email == parsed_user.email).first()
+        if user_with_email:
+            abort(400, message="Duplicate email: '{}'".format(parsed_user.email))
+        user = User(**parsed_user)
+        db.session.add(user)
+        db.session.commit()
+        return '', 201
 
     def delete(self):
-        """Delete all user resources."""
-        self.db.nuke()
+        """Delete all users."""
+        db.session.query(User).delete()
+        db.session.commit()
+        return '', 200
 
 
 class UserById(flask_restful.Resource):
-    """Resource for interacting with user data given a user ID."""
-    def __init__(self):
-        """Initialize the Resource, creating a database-like interface to the user data."""
-        self.db = UserDAO()
-
-    def get(self, user_id: int) -> dict:
-        """Retrieve user with the given ID.
+    """Resource for interacting with user data based on a user id."""
+    @marshal_with(_USER_FIELDS)
+    def get(self, user_id):
+        """Get a user resource by id.
 
         Args:
-            user_id (int): ID of the user to fetch.
+            user_id (int): id of the user to look up.
 
         Returns:
-            (dict): User with the given ID as a dictionary.
+            User with the given id if found.
         """
-        user = self.db.find_user_by_id(user_id)
+        user = db.session.query(User).filter(User.id == user_id).first()
         if not user:
-            return '', 404
-        return flask.jsonify(user)
+            abort(404, message="User {} does not exist".format(user_id))
+        return user
 
-    def put(self, user_id: int):
-        """Update user with the given ID.
+    def put(self, user_id):
+        """Create or update a user resource by id.
 
         Args:
-            user_id (int): ID of the user to replace.
-        """
-        user = self.db.find_user_by_id(user_id)
-        if not user:
-            return '', 404
-        query_params = _parse_user_from_request_body(require_all_fields=False)
-        updated_user = {key: query_params.get(key) or user[key] for key in user}
-        self.db.update_user(updated_user, user_id)
-        return '', 200
+            user_id (int): id of the user to create or update.
 
-    def delete(self, user_id: int):
-        """Delete user with the given ID.
+        Returns:
+            Updated User.
+        """
+        parsed_user = _parse_user_from_request_body(require_all_fields=True)
+        user = db.session.query(User).filter(User.id == user_id).first()
+        if user:
+            db.session.query(User).filter(User.id == user_id).update(parsed_user)
+            db.session.commit()
+            return user, 200
+        else:
+            user = User(**parsed_user)
+            db.session.add(user)
+            db.session.commit()
+            return user, 201
+
+    def delete(self, user_id):
+        """Delete user with the given id.
 
         Args:
-            user_id (int): ID of the user to delete.
+            user_id (int): id of the user to delete
         """
-        user = self.db.find_user_by_id(user_id)
-        if not user:
-            return '',404
-        self.db.del_user_by_id(user_id)
-        return '',200
+        user = db.session.query(User).filter(User.id == user_id).first()
+        if user:
+            db.session.query(User).filter(User.id == user_id).delete()
+            db.session.commit()
+            return '', 200
+        else:
+            return '', 404
+            # abort(404, message="User {} does not exist".format(user_id))

@@ -115,8 +115,6 @@ class JsonWrapper(object):
     def __repr__(self) -> str:
         return "JSON Wrapper for '{}'".format(self._data_file_path)
 
-from polyrides.data.json_wrapper import JsonWrapper
-
 
 class UserDAO(JsonWrapper):
     """Data Access Object that provides methods for interacting with user data."""

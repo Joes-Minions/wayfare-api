@@ -15,7 +15,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 db = flask_sqlalchemy.SQLAlchemy(app)  # pylint: disable=C0103
 
 from polyrides.models.ride import Ride
-from polyrides.models.user import User  # pylint: disable=C0413
+from polyrides.models.user import User
+from polyrides.models.time_range import TimeRange  # pylint: disable=C0413
+
 # Necessary for sqlite
 db.drop_all()
 db.create_all()

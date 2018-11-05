@@ -1,28 +1,39 @@
 # pylint: disable=E1101
 """Class wrapping a Ride table."""
 from polyrides import db
+# Included a table as an attribute in Rides 
+# to support many-to-many relationships.
+passengers = db.Table('passengers',
+        db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+        db.Column('ride_id', db.Integer, db.ForeignKey('rides.id'), primary_key=True)
+        )
 
 
 class Ride(db.Model):
     """Data access object providing a static interface to a Ride table."""
     __tablename__ = 'rides'
+    # when creating fields to marshal in resource, only include 
+    # Column Attributes
+    # TODO : set up locations attribute
+    # TODO : understand datetime attributes  
 
+    # Column Attributes
     id = db.Column(db.Integer, primary_key=True)
-    start_location = db.Column(db.String(64))
-    end_location = db.Column(db.String(64))
-    departure_date = db.Column(db.String(64))
-    # time_range_id = db.Column(db.Integer,
-    #                 db.ForeignKey('timerange.id'),
-    #                 nullable=False) 
-    # todo : relationally maps to time_range id to model of time_range
+    actual_leaving_time = db.Column(db.DateTime, 
+                    nullable = True)  
+    departure_date = db.Column(db.DateTime)
     ride_capacity = db.Column(db.Integer)
+    time_range_id = db.Column(db.Integer,
+                    db.ForeignKey('time_ranges.id'),
+                    nullable=False) 
     driver_id = db.Column(db.Integer, db.ForeignKey('users.id'),
         nullable=False)
-
+    # Relationship Attributes
+    time_range = db.relationship('TimeRange')
     driver = db.relationship('User', backref='drives', lazy=True)
-    # actual_leaving_time = db.Column(db.DateTime, 
-    #                         nullable = True)  
-    # todo : figure out how to set up datetime attributes  
+    passengers = db.relationship('User', secondary=passengers, lazy='subquery',
+        backref=db.backref('rides', lazy=True))
+
     def create(self):
         """Add this `Ride` to the database."""
         db.session.add(self)

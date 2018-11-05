@@ -5,14 +5,24 @@ from polyrides import db
 
 class Ride(db.Model):
     """Data access object providing a static interface to a Ride table."""
-    __tablename__ = 'Rides'
+    __tablename__ = 'rides'
 
     id = db.Column(db.Integer, primary_key=True)
-    # first_name = db.Column(db.String(64))
-    # last_name = db.Column(db.String(64))
-    # email = db.Column(db.String(64))
-    # password = db.Column(db.String(64))
+    start_location = db.Column(db.String(64))
+    end_location = db.Column(db.String(64))
+    departure_date = db.Column(db.String(64))
+    # time_range_id = db.Column(db.Integer,
+    #                 db.ForeignKey('timerange.id'),
+    #                 nullable=False) 
+    # todo : relationally maps to time_range id to model of time_range
+    ride_capacity = db.Column(db.Integer)
+    driver_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+        nullable=False)
 
+    driver = db.relationship('User', backref='drives', lazy=True)
+    # actual_leaving_time = db.Column(db.DateTime, 
+    #                         nullable = True)  
+    # todo : figure out how to set up datetime attributes  
     def create(self):
         """Add this `Ride` to the database."""
         db.session.add(self)
@@ -24,7 +34,8 @@ class Ride(db.Model):
         Args:
             new_fields (dict): Dict containing new values for this `Ride`.
         """
-
+        db.session.query(Ride).filter(Ride.id == self.id).update(new_fields)
+        db.session.commit()
 
     def delete(self):
         """Delete this `Ride` from the database."""

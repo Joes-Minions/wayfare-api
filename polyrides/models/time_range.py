@@ -5,6 +5,7 @@ from polyrides import db
 class TimeRange(db.Model):
     """Data access object providing a static interface to a user table."""
     __tablename__ = 'time_ranges'
+
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(255))
     start_time = db.Column(db.Integer))
@@ -21,7 +22,9 @@ class TimeRange(db.Model):
         Args:
             new_fields (dict): Dict containing new values for this `Time Range`.
         """
-        
+        db.session.query(TimeRange).filter(TimeRange.id == self.id).update(new_fields)
+        db.session.commit()
+
     def delete(self):
         """Delete this `Time Range` from the database."""
         db.session.query(TimeRange).filter(TimeRange.id == self.id).delete()

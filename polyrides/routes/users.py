@@ -12,7 +12,7 @@ from polyrides.models.user import User
 
 
 # Fields to include in a response body.
-_response_fields = {  # pylint: disable=C0103
+_response_schema = {  # pylint: disable=C0103
     'id': flask_fields.Integer,
     'first_name': flask_fields.String,
     'last_name': flask_fields.String,
@@ -20,13 +20,18 @@ _response_fields = {  # pylint: disable=C0103
     'password': flask_fields.String
 }
 
-# Fields expected in a POST/PUT request body or as GET query parameters.
-_request_fields = {  # pylint: disable=C0103
-    'first_name': webargs_fields.String(required=True),  # pylint: disable=E1101
-    'last_name': webargs_fields.String(required=True),  # pylint: disable=E1101
-    'email': webargs_fields.String(required=True),  # pylint: disable=E1101
-    'password': webargs_fields.String(required=True)  # pylint: disable=E1101
-}
+def _make_request_schema(require_all: bool = False) -> dict:
+    """Create an expected schema for a request body or query.
+
+    Args:
+        require_all (bool): True to require that all fields be present.
+    """
+    return {
+        'first_name': webargs_fields.String(required=require_all),  # pylint: disable=E1101
+        'last_name': webargs_fields.String(required=require_all),  # pylint: disable=E1101
+        'email': webargs_fields.String(required=require_all),  # pylint: disable=E1101
+        'password': webargs_fields.String(required=require_all)  # pylint: disable=E1101
+    }
 
 
 @parser.error_handler
@@ -45,12 +50,12 @@ def _handle_parse_error(err, req, schema):
 
 class Users(flask_restful.Resource):
     """Resource for interacting with `User` data."""
-    @marshal_with(_response_fields)
+    @marshal_with(_response_schema)
     def get(self):
-        """Get all users."""
+        """Retrieve all users."""
         return User.get_all()
 
-    @use_args(_request_fields)
+    @use_args(_make_request_schema(require_all=True))
     def post(self, request_body: dict):
         """Create a user.
 
@@ -75,7 +80,7 @@ class Users(flask_restful.Resource):
 
 class UserById(flask_restful.Resource):
     """Resource for interacting with user data based on a user id."""
-    @marshal_with(_response_fields)
+    @marshal_with(_response_schema)
     def get(self, user_id: int):
         """Get a user resource by id.
 
@@ -90,7 +95,7 @@ class UserById(flask_restful.Resource):
             abort(404, message="User {} does not exist".format(user_id))
         return user
 
-    @use_args(_request_fields)
+    @use_args(_make_request_schema(require_all=True))
     def put(self, request_body: dict, user_id: int):
         """Create or update a user resource by id.
 

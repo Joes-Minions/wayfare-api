@@ -3,7 +3,6 @@ import argparse
 
 from polyrides import app
 from polyrides import api
-from polyrides import db
 from polyrides.routes import users
 
 

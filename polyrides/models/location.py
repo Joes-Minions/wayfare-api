@@ -3,11 +3,12 @@
 from typing import List
 
 from polyrides import db
+from polyrides import models
 
 
 class Location(db.Model):
     """Data access object providing a static interface to a location table."""
-    __tablename__ = 'location'
+    __tablename__ = models.tables.LOCATION
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
@@ -33,10 +34,7 @@ class Location(db.Model):
 
     @staticmethod
     def get_all() -> List['Location']:
-        """Return all `Location`s in the database.
-
-        Returns:
-            List of `Location` objects."""
+        """Return all `Location`s in the database."""
         return db.session.query(Location).all()
 
     @staticmethod

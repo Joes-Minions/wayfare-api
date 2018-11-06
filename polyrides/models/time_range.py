@@ -8,8 +8,8 @@ class TimeRange(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(255))
-    start_time = db.Column(db.Integer))
-    end_time = db.Column(db.Integer))
+    start_time = db.Column(db.Integer)
+    end_time = db.Column(db.Integer)
 
     def create(self):
         """Add this `Time Range` to the database."""

@@ -1,10 +1,13 @@
-# pyline: diable=E1101
+# pylint: disable=E1101
+"""Class wrapping a location table."""
+from typing import List
+
 from polyrides import db
 
 
 class Location(db.Model):
     """Data access object providing a static interface to a location table."""
-    __tablename__ = 'locations'
+    __tablename__ = 'location'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
@@ -18,19 +21,22 @@ class Location(db.Model):
         """Update this `Location`.
 
         Args:
-            new fields (dict): Dict containing new values for this `Location`.
+            new_fields (dict): Dict containing new values for this `Location`.
         """
         db.session.query(Location).filter(Location.id == self.id).update(new_fields)
         db.session.commit()
 
     def delete(self):
-        """Delete this `Location from the database."""
+        """Delete this `Location` from the database."""
         db.session.query(Location).filter(Location.id == self.id).delete()
         db.session.commit()
 
     @staticmethod
-    def get_all():
-        """Return all `Location`s in the database."""
+    def get_all() -> List['Location']:
+        """Return all `Location`s in the database.
+
+        Returns:
+            List of `Location` objects."""
         return db.session.query(Location).all()
 
     @staticmethod
@@ -40,14 +46,14 @@ class Location(db.Model):
         db.session.commit()
 
     @staticmethod
-    def find_by_id(location_id : int) -> 'Location':
+    def find_by_id(location_id: int) -> 'Location':
         """Look up a `Location` by id.
 
         Args:
-            id (int): id to match.
+            location_id (int): id to match.
 
         Returns:
-            Location with the given id if found.
+            `Location` with the given id if found.
         """
         return db.session.query(Location).filter(Location.id == location_id).first()
 

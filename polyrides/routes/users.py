@@ -100,6 +100,7 @@ class UserById(flask_restful.Resource):
         """
         parsed_user = _parse_user_from_request_body(require_all_fields=True)
         user = User.find_by_id(user_id)
+        print(parsed_user)
         if user:
             user.update(parsed_user)
             return '', 200

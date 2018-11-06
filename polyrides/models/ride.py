@@ -12,7 +12,7 @@ from polyrides.models.user import User
 
 # quan: hmm...
 # Included a table as an attribute in Rides to support many-to-many relationships.
-_PASSENGERS = db.Table(  
+_PASSENGERS = db.Table(
     'passengers',
     db.Column('user_id',
               db.Integer,

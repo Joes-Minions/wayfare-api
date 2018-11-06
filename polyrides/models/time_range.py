@@ -3,10 +3,12 @@
 from typing import List
 
 from polyrides import db
+from polyrides import models
+
 
 class TimeRange(db.Model):
     """Data access object providing a static interface to a user table."""
-    __tablename__ = 'time_range'
+    __tablename__ = models.tables.TIME_RANGE
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(255))

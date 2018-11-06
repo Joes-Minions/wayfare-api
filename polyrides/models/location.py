@@ -3,11 +3,12 @@
 from typing import List
 
 from polyrides import db
+from polyrides import models
 
 
 class Location(db.Model):
     """Data access object providing a static interface to a location table."""
-    __tablename__ = 'location'
+    __tablename__ = models.tables.LOCATION
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))

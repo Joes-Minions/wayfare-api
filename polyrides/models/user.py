@@ -3,11 +3,12 @@
 from typing import List
 
 from polyrides import db
+from polyrides import models
 
 
 class User(db.Model):
     """Data access object providing a static interface to a user table."""
-    __tablename__ = 'user'
+    __tablename__ = models.tables.USER
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(64))

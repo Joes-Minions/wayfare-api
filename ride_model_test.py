@@ -1,6 +1,17 @@
 #!/usr/bin/env python
+"""
+This file shouldn't be in the develop branch but it is because I want to quickly move forward.
+For the future, files in the repository should be in finalized (or on the way to finalized) state
+and should be essential to running the app. 
 
-#chmod +x ride_model_test.py
+When adding files to the repo, think
+Can the app run without this?
+- If no, include it.
+- If yes, but it provides a very standard way of testing (AKA unit tests), include it.
+- Otherwise, nah. You can keep it locally to run, but it doesn't need to be tracked. I do this
+  often with shell scripts like test.sh or a test_whatever.py type thing that I can run to check
+  my code is working.
+"""
 
 from polyrides.models.location import Location
 from polyrides.models.ride import Ride

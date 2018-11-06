@@ -27,6 +27,7 @@ _PASSENGERS = db.Table(
 
 class Ride(db.Model):
     """Data access object providing a static interface to a Ride table."""
+<<<<<<< HEAD
     __tablename__ = models.tables.RIDE
 
     # when creating fields to marshal in resource, only include ??
@@ -59,6 +60,30 @@ class Ride(db.Model):
                                  backref=db.backref('rides', lazy=True))
     start_location = db.relationship(Location, foreign_keys=[start_location_id])
     destination = db.relationship(Location, foreign_keys=[destination_id])
+=======
+    __tablename__ = 'rides'
+    # when creating fields to marshal in resource, only include 
+    # Column Attributes
+    # TODO : set up locations attribute
+    # TODO : understand datetime attributes  
+
+    # Column Attributes
+    id = db.Column(db.Integer, primary_key=True)
+    actual_leaving_time = db.Column(db.DateTime, 
+                    nullable = True)  
+    departure_date = db.Column(db.DateTime)
+    ride_capacity = db.Column(db.Integer)
+    time_range_id = db.Column(db.Integer,
+                    db.ForeignKey('time_ranges.id'),
+                    nullable=False) 
+    driver_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+        nullable=False)
+    # Relationship Attributes
+    time_range = db.relationship('TimeRange')
+    driver = db.relationship('User', backref='drives', lazy=True)
+    passengers = db.relationship('User', secondary=passengers, lazy='subquery',
+        backref=db.backref('rides', lazy=True))
+>>>>>>> da8f3c8aed42722c01a58a43e5c8feb3c807d172
 
     def create(self):
         """Add this `Ride` to the database."""

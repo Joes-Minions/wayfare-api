@@ -33,10 +33,7 @@ class Location(db.Model):
 
     @staticmethod
     def get_all() -> List['Location']:
-        """Return all `Location`s in the database.
-
-        Returns:
-            List of `Location` objects."""
+        """Return all `Location`s in the database."""
         return db.session.query(Location).all()
 
     @staticmethod

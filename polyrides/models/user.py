@@ -1,11 +1,13 @@
 # pylint: disable=E1101
 """Class wrapping a user table."""
+from typing import List
+
 from polyrides import db
 
 
 class User(db.Model):
     """Data access object providing a static interface to a user table."""
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(64))
@@ -33,7 +35,7 @@ class User(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_all():
+    def get_all() -> List['User']:
         """Return all `User`s in the database."""
         return db.session.query(User).all()
 
@@ -45,7 +47,7 @@ class User(db.Model):
 
     @staticmethod
     def find_by_id(user_id: int) -> 'User':
-        """Look up a `User`s by id.
+        """Look up a `User` by id.
 
         Args:
             id (int): id to match.

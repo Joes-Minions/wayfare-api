@@ -117,6 +117,7 @@ class UserById(flask_restful.Resource):
             user_id (int): user id provided in the uri path.
         """
         user = User.find_by_id(user_id)
+        print(parsed_user)
         if user:
             user.update(request_body)
             return '', 200

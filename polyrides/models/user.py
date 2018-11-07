@@ -27,7 +27,7 @@ class User(db.Model):
         Args:
             new_fields (dict): Dict containing new values for this `User`.
         """
-        user = db.session.query(User).filter(User.id == self.id).first()
+        user = db.session.query(User).filter(User.id == self.id).update(new_fields)
         db.session.commit()
 
     def delete(self):

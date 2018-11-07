@@ -24,7 +24,7 @@ class User(AbstractModelBase):
     password = db.Column(db.String(64))
 
     @db.validates('first_name')
-    def validate_email(self, key: str, first_name: str):
+    def validate_first_name(self, key: str, first_name: str):
         """Check that a first name is valid.
 
         Args:

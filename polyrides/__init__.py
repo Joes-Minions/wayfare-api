@@ -18,6 +18,8 @@ from polyrides.models.location import Location  # pylint: disable=C0413
 from polyrides.models.ride import Ride  # pylint: disable=C0413
 from polyrides.models.time_range import TimeRange  # pylint: disable=C0413
 from polyrides.models.user import User  # pylint: disable=C0413
+from polyrides.models.passenger import Passenger  # pylint: disable=C0413
+
 # Necessary for sqlite
 db.drop_all()
 db.create_all()

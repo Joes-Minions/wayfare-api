@@ -18,6 +18,8 @@ from polyrides.models.ride import Ride
 from polyrides.models.time_range import TimeRange
 from polyrides.models.user import User
 from datetime import datetime
+from polyrides.models.status import Status
+from polyrides.models.passenger import Passenger
 
 
 
@@ -65,24 +67,44 @@ u3 = User(
     password = 'password321'
 )
 u3.create()
+st = Status(
+    description = 'Pending'
+)
+st.create()
+st2 = Status(
+    description = 'Confirmed'
+)
+st2.create()
 
 print(User.query.all())
 print(TimeRange.query.all())
 print(Ride.query.all())
 
+
 print("Append quan and phil to ride 1 ")
+ps = Passenger(
+    user_id = 1,
+    ride_id = 1,
+    status_id = 1,
+)
+ps.create()
 
-r.passengers.append(User.query.filter(User.id == u2.id).first())
-r.passengers.append(User.query.filter(User.id == u3.id).first())
+ps2 = Passenger(
+    user_id = 2,
+    ride_id = 1,
+    status_id = 1,
+)
+ps2.create()
 
-
-print(r.time_range.description)
-print("  Start  " +str(r.time_range.start_time))
-print("  {}".format(slo.name))
-print("  End  " + str(r.time_range.end_time))
-print("  {}".format(sf.name))
-print()
-print("PASSENGERS")
-for passenger in r.passengers:
-    print("first name: " + passenger.first_name)
-    print("last name: " + passenger.last_name)
+print("update first person")
+ps.update({"status_id":2})
+print(Passenger.query.all())
+print("find passengers by ride id(1): ")
+print(Passenger.find_by_ride_id(1).all())
+print("find passengers by user id(1): ")
+print(Passenger.find_by_user_id(1).all())
+print("find passengers by Status id(1): ")
+print(Passenger.find_by_status_id(1).all())
+print(Status.query.all())
+ps.delete_all()
+print(Passenger.query.all())

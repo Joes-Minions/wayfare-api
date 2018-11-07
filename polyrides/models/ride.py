@@ -8,21 +8,8 @@ from polyrides import models
 from polyrides.models.location import Location
 from polyrides.models.time_range import TimeRange
 from polyrides.models.user import User
-
-
-# quan: hmm...
-# Included a table as an attribute in Rides to support many-to-many relationships.
-_PASSENGERS = db.Table(
-    'passengers',
-    db.Column('user_id',
-              db.Integer,
-              db.ForeignKey(models.tables.USER + '.id'),
-              primary_key=True),
-    db.Column('ride_id',
-              db.Integer,
-              db.ForeignKey(models.tables.RIDE + '.id'),
-              primary_key=True)
-)
+from polyrides.models.status import Status
+from polyrides.models.passenger import Passenger
 
 
 class Ride(db.Model):
@@ -54,9 +41,7 @@ class Ride(db.Model):
     time_range = db.relationship(TimeRange)
     # TODO : Figure out this backref thing
     driver = db.relationship(User, backref='drives', lazy=True)
-    passengers = db.relationship(User,
-                                 secondary=_PASSENGERS,
-                                 backref=db.backref('rides', lazy=True))
+    passengers = db.relationship(Passenger, cascade="all, delete-orphan")
     start_location = db.relationship(Location, foreign_keys=[start_location_id])
     destination = db.relationship(Location, foreign_keys=[destination_id])
 

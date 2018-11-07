@@ -12,8 +12,11 @@ DB_URI = 'sqlite:///./main.db'
 
 app = Flask(__name__)  # pylint: disable=C0103
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
-db = flask_sqlalchemy.SQLAlchemy(app)  # pylint: disable=C0103
 
+db = flask_sqlalchemy.SQLAlchemy(app)  # pylint: disable=C0103
+from polyrides.models.location import Location  # pylint: disable=C0413
+from polyrides.models.ride import Ride  # pylint: disable=C0413
+from polyrides.models.time_range import TimeRange  # pylint: disable=C0413
 from polyrides.models.user import User  # pylint: disable=C0413
 # Necessary for sqlite
 db.drop_all()

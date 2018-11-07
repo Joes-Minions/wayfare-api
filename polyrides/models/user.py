@@ -5,6 +5,8 @@ from typing import List
 from polyrides import db
 from polyrides import models
 
+from polyrides.exceptions import DuplicateEmail
+
 
 class User(db.Model):
     """Data access object providing a static interface to a user table."""
@@ -15,6 +17,15 @@ class User(db.Model):
     last_name = db.Column(db.String(64))
     email = db.Column(db.String(64))
     password = db.Column(db.String(64))
+
+    def __init__(self, first_name: str, last_name: str, email: str, password: str):
+        """Init a `User` with the given values."""
+        if self.find_by_email(email):
+            raise DuplicateEmail(email)
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
 
     def create(self):
         """Add this `User` to the database."""

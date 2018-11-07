@@ -8,6 +8,7 @@ from webargs import fields as webargs_fields
 from webargs.flaskparser import parser
 from webargs.flaskparser import use_args
 
+from polyrides.exceptions import DuplicateEmail
 from polyrides.models.user import User
 
 
@@ -62,17 +63,18 @@ class Users(flask_restful.Resource):
         Args:
             request_body (dict): Data extracted from request body.
         """
-        if User.find_by_email(request_body['email']):
-            abort(400, message="Duplicate email: '{}'".format(request_body['email']))
-        user = User(
-            first_name=request_body['first_name'],
-            last_name=request_body['last_name'],
-            email=request_body['email'],
-            password=request_body['password']
-        )
-        user.create()
-        # TODO: Attach a location header as a result of a successful POST request.
-        return '', 201
+        try:
+            user = User(
+                first_name=request_body['first_name'],
+                last_name=request_body['last_name'],
+                email=request_body['email'],
+                password=request_body['password']
+            )
+            user.create()
+            # TODO: Attach a location header as a result of a successful POST request.
+            return '', 201
+        except DuplicateEmail as ex:
+            abort(400, message=ex.message)
 
     def delete(self):
         """Delete all users.

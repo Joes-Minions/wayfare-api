@@ -30,6 +30,9 @@ class User(AbstractModelBase):
         Args:
             key (str): Dict key matching the validated field.
             first_name (str): Value provided to field.
+
+        Raises:
+            TODO
         """
         pass
 

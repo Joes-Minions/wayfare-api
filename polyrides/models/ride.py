@@ -4,6 +4,7 @@ from typing import List
 
 from polyrides import db
 from polyrides import models
+from datetime import datetime
 
 from polyrides.models.location import Location
 from polyrides.models.time_range import TimeRange
@@ -22,7 +23,7 @@ class Ride(db.Model):
     # Column Attributes
     id = db.Column(db.Integer, primary_key=True)
     actual_departure_time = db.Column(db.DateTime)
-    departure_date = db.Column(db.Date)
+    departure_date = db.Column(db.DateTime)
     capacity = db.Column(db.Integer)
     time_range_id = db.Column(db.Integer,
                               db.ForeignKey(models.tables.TIME_RANGE + '.id'),

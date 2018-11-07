@@ -64,7 +64,12 @@ class Users(flask_restful.Resource):
         """
         if User.find_by_email(request_body['email']):
             abort(400, message="Duplicate email: '{}'".format(request_body['email']))
-        user = User(**request_body)
+        user = User(
+            first_name=request_body['first_name'],
+            last_name=request_body['last_name'],
+            email=request_body['email'],
+            password=request_body['password']
+        )
         user.create()
         # TODO: Attach a location header as a result of a successful POST request.
         return '', 201

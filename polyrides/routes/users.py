@@ -1,81 +1,92 @@
 """Flask-RESTful resources for interacting with user data."""
-import flask
 import flask_restful
-
 from flask_restful import abort
-from flask_restful import fields
+from flask_restful import fields as flask_fields
 from flask_restful import marshal_with
-from flask_restful import reqparse
+
+from webargs import fields as webargs_fields
+from webargs.flaskparser import parser
+from webargs.flaskparser import use_args
 
 from polyrides.models.user import User
 
 
-_BASE_URL = 'users' 
-_USER_FIELDS = {
-    'id': fields.Integer,
-    'first_name': fields.String,
-    'last_name': fields.String,
-    'email': fields.String,
-    'password': fields.String
+# Fields to include in a response body.
+_response_schema = {  # pylint: disable=C0103
+    'id': flask_fields.Integer,
+    'first_name': flask_fields.String,
+    'last_name': flask_fields.String,
+    'email': flask_fields.String,
+    'password': flask_fields.String
 }
 
-
-def _parse_user_from_request_body(require_all_fields: bool = False) -> dict:
-    """Parse user data from a request body provided in a POST or PUT request.
+def _make_request_schema(require_all: bool = False) -> dict:
+    """Create an expected schema for a request body or query.
 
     Args:
-        require_all_fields (bool): True to require that all fields be present in the request body.
-
-    Returns:
-        (dict) User data fields as a dictionary.
+        require_all (bool): True to require that all fields be present.
     """
-    parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument('first_name',
-                        type=str,
-                        help="Missing field: 'first_name'",
-                        required=require_all_fields)
-    parser.add_argument('last_name',
-                        type=str,
-                        help="Missing field: 'last_name'",
-                        required=require_all_fields)
-    parser.add_argument('email',
-                        type=str,
-                        help="Missing field: 'email'",
-                        required=require_all_fields)
-    parser.add_argument('password',
-                        type=str,
-                        help="Missing field: 'password'",
-                        required=require_all_fields)
-    return parser.parse_args()
+    return {
+        'first_name': webargs_fields.String(required=require_all),  # pylint: disable=E1101
+        'last_name': webargs_fields.String(required=require_all),  # pylint: disable=E1101
+        'email': webargs_fields.String(required=require_all),  # pylint: disable=E1101
+        'password': webargs_fields.String(required=require_all)  # pylint: disable=E1101
+    }
+
+
+@parser.error_handler
+def _handle_parse_error(err, req, schema):
+    """Handler for request parse errors.
+
+    This is called if a method decorated with `use_args` encounters a parse error.
+
+    Args:
+        err (webargs.core.ValidationError): Raised error.
+        req (flask.Request): Flask request object.
+        schema (marshmallow.Schema): Schema used to parse request.
+    """
+    abort(400, message=err.messages)
 
 
 class Users(flask_restful.Resource):
     """Resource for interacting with `User` data."""
-    @marshal_with(_USER_FIELDS)
+    @marshal_with(_response_schema)
     def get(self):
-        """Get all users."""
+        """Retrieve all users."""
         return User.get_all()
 
-    def post(self):
-        """Add a user."""
-        parsed_user = _parse_user_from_request_body(require_all_fields=True)
-        if User.find_by_email(parsed_user.email):
-            abort(400, message="Duplicate email: '{}'".format(parsed_user.email))
-        user = User(**parsed_user)
+    @use_args(_make_request_schema(require_all=True))
+    def post(self, request_body: dict):
+        """Create a user.
+
+        Args:
+            request_body (dict): Data extracted from request body.
+        """
+        if User.find_by_email(request_body['email']):
+            abort(400, message="Duplicate email: '{}'".format(request_body['email']))
+        user = User(
+            first_name=request_body['first_name'],
+            last_name=request_body['last_name'],
+            email=request_body['email'],
+            password=request_body['password']
+        )
         user.create()
         # TODO: Attach a location header as a result of a successful POST request.
         return '', 201
 
     def delete(self):
-        """Delete all users."""
+        """Delete all users.
+
+        NOTE: This is (potentially) an incredibly destructive method. Be careful.
+        """
         User.delete_all()
         return '', 200
 
 
 class UserById(flask_restful.Resource):
     """Resource for interacting with user data based on a user id."""
-    @marshal_with(_USER_FIELDS)
-    def get(self, user_id):
+    @marshal_with(_response_schema)
+    def get(self, user_id: int):
         """Get a user resource by id.
 
         Args:
@@ -89,26 +100,23 @@ class UserById(flask_restful.Resource):
             abort(404, message="User {} does not exist".format(user_id))
         return user
 
-    def put(self, user_id):
+    @use_args(_make_request_schema(require_all=True))
+    def put(self, request_body: dict, user_id: int):
         """Create or update a user resource by id.
 
         Args:
-            user_id (int): id of the user to create or update.
-
-        Returns:
-            Updated User.
+            request_body (dict): Data extracted from request body.
+            user_id (int): user id provided in the uri path.
         """
-        parsed_user = _parse_user_from_request_body(require_all_fields=True)
         user = User.find_by_id(user_id)
         if user:
-            user.update(parsed_user)
+            user.update(request_body)
             return '', 200
-        else:
-            user = User(**parsed_user)
-            user.create()
-            return '', 201
+        user = User(**request_body)
+        user.create()
+        return '', 201
 
-    def delete(self, user_id):
+    def delete(self, user_id: int):
         """Delete user with the given id.
 
         Args:
@@ -118,5 +126,4 @@ class UserById(flask_restful.Resource):
         if user:
             user.delete()
             return '', 200
-        else:
-            abort(404, message="User {} does not exist".format(user_id))
+        abort(404, message="User {} does not exist".format(user_id))

@@ -1,6 +1,7 @@
 # pylint: disable=E1101
 """Class wrapping a Passenger table."""
 from typing import List
+from datetime import datetime
 
 from polyrides import db
 from polyrides import models
@@ -10,15 +11,17 @@ class Passenger(db.Model):
     """Data access object providing a static interface to a Passenger table."""
     __tablename__ = models.tables.PASSENGER
     # Column Attributes
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer,
-                        db.ForeignKey(models.tables.USER + '.id', ondelete='CASCADE'),
-                        primary_key=True)
+                        db.ForeignKey(models.tables.USER + '.id', ondelete='CASCADE'))
     ride_id = db.Column(db.Integer,
-                        db.ForeignKey(models.tables.RIDE + '.id', ondelete='CASCADE'),
-                        primary_key=True)
+                        db.ForeignKey(models.tables.RIDE + '.id', ondelete='CASCADE'))
     status_id = db.Column(db.Integer,
-                        db.ForeignKey(models.tables.STATUS + '.id'),
-                        primary_key=True)
+                        db.ForeignKey(models.tables.STATUS + '.id'))
+    updated = db.Column(db.DateTime, 
+                        nullable=False, 
+                        default=datetime.utcnow)
+
     # Relationship Attributes
     db.UniqueConstraint('user_id', 'ride_id', 'status_id')
     db.relationship('User', 
@@ -46,6 +49,8 @@ class Passenger(db.Model):
         Args:
             new_fields (dict): Dict containing new values for this `Passenger`.
         """
+        if ('status_id' in new_fields):
+            self.update({"updated": datetime.utcnow()})
         db.session.query(Passenger).filter(Passenger.user_id == self.user_id).update(new_fields)
         db.session.commit()
 
@@ -64,6 +69,18 @@ class Passenger(db.Model):
         """Delete all `Passenger`s in the database."""
         db.session.query(Passenger).delete()
         db.session.commit()
+        
+    @staticmethod
+    def find_by_id(id: int) -> 'Passenger':
+        """Look up a `Passenger` by id.
+
+        Args:
+            id (int): id to match.
+
+        Returns:
+            `Passenger`s associated with the given id if found.
+        """
+        return db.session.query(Passenger).filter(Passenger.id == id).first()
 
     @staticmethod
     def find_by_ride_id(ride_id: int) -> List['Passenger']:

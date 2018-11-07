@@ -79,7 +79,7 @@ class Users(flask_restful.Resource):
 
 
 class UserById(flask_restful.Resource):
-    """Resource for interacting with `User` data by id."""
+    """Resource for interacting with user data based on a user id."""
     @marshal_with(_response_schema)
     def get(self, user_id: int):
         """Get a user resource by id.

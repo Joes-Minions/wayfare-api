@@ -5,9 +5,10 @@ from datetime import datetime
 
 from polyrides import db
 from polyrides import models
+from polyrides.models import AbstractModelBase
 
 
-class Passenger(db.Model):
+class Passenger(AbstractModelBase):
     """Data access object providing a static interface to a Passenger table."""
     __tablename__ = models.tables.PASSENGER
     # Column Attributes
@@ -19,7 +20,7 @@ class Passenger(db.Model):
     status_id = db.Column(db.Integer,
                         db.ForeignKey(models.tables.STATUS + '.id'))
     updated = db.Column(db.DateTime, 
-                        nullable=False, 
+                        nullable=False,
                         default=datetime.utcnow)
 
     # Relationship Attributes
@@ -27,21 +28,16 @@ class Passenger(db.Model):
     db.relationship('User', 
                     uselist=False,
                     backref=db.backref('passenger', passive_deletes=True),
-                    lazy='dynamic', 
+                    lazy='dynamic',
                     passive_deletes=True)
     db.relationship('Ride', 
-                    uselist=False, 
+                    uselist=False,
                     backref=db.backref('passenger', passive_deletes=True),
                     lazy='dynamic', 
                     passive_deletes=True)
     db.relationship('Status', 
-                    uselist=False, 
+                    uselist=False,
                     lazy='dynamic')
-    
-    def create(self):
-        """Add this `Passenger` to the database."""
-        db.session.add(self)
-        db.session.commit()
 
     def update(self, new_fields: dict):
         """Update this `Passenger`.
@@ -52,22 +48,6 @@ class Passenger(db.Model):
         if ('status_id' in new_fields):
             self.update({"updated": datetime.utcnow()})
         db.session.query(Passenger).filter(Passenger.user_id == self.user_id).update(new_fields)
-        db.session.commit()
-
-    def delete(self):
-        """Delete this `Passenger` from the database."""
-        db.session.query(Passenger).filter(Passenger.user_id == self.user_id).delete()
-        db.session.commit()
-
-    @staticmethod
-    def get_all() -> List['Passenger']:
-        """Return all `Passenger`s in the database."""
-        return db.session.query(Passenger).all()
-
-    @staticmethod
-    def delete_all():
-        """Delete all `Passenger`s in the database."""
-        db.session.query(Passenger).delete()
         db.session.commit()
         
     @staticmethod

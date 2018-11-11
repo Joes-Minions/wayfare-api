@@ -19,7 +19,7 @@ _TEST_USERS = [
     {  # id: 3
         'first_name': 'Barack',
         'last_name': 'Obama',
-        'email': 'test@example.com',
+        'email': 'email@example.com',
         'password': 'america'
     },
     {  # id: 4
@@ -54,7 +54,7 @@ class TestUsers(unittest.TestCase):
     def test_post_missing_first_name(self):
         response = requests.post(self.endpoint, {
             'last_name': 'test',
-            'email': 'test',
+            'email': 'email@example.com',
             'password': 'test'
         })
         self.assertEqual(response.status_code, 400)
@@ -63,7 +63,7 @@ class TestUsers(unittest.TestCase):
     def test_post_missing_last_name(self):
         response = requests.post(self.endpoint, {
             'first_name': 'test',
-            'email': 'test',
+            'email': 'email@example.com',
             'password': 'test'
         })
         self.assertEqual(response.status_code, 400)
@@ -82,7 +82,7 @@ class TestUsers(unittest.TestCase):
         response = requests.post(self.endpoint, {
             'first_name': 'test',
             'last_name': 'test',
-            'email': 'test'
+            'email': 'email@example.com'
         })
         self.assertEqual(response.status_code, 400)
         self.assertIn('password', response.json()['message'])
@@ -102,10 +102,11 @@ class TestUsers(unittest.TestCase):
         new_user = {
             'first_name': 'test',
             'last_name': 'test',
-            'email': 'test',
+            'email': 'unique_email@example.com',
             'password': 'test'
         }
         post_response = requests.post(self.endpoint, new_user)
+        print(post_response.json())
         self.assertEqual(post_response.status_code, 201)
         # self.assertEqual(post_response.json(), '')
         new_user.update({

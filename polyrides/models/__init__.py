@@ -6,5 +6,5 @@ from polyrides.models.location import Location
 from polyrides.models.status import Status
 from polyrides.models.time_range import TimeRange
 from polyrides.models.user import User
-from polyrides.models.ride import Ride
 from polyrides.models.passenger import Passenger
+from polyrides.models.ride import Ride

@@ -34,7 +34,7 @@ class User(AbstractModelBase):
         Raises:
             TODO
         """
-        pass
+        return first_name
 
     @db.validates('email')
     def validate_email(self, key: str, email: str):

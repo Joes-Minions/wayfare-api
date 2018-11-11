@@ -10,7 +10,7 @@ from polyrides.models import AbstractModelBase
 from polyrides.models import Location
 from polyrides.models import TimeRange
 from polyrides.models import User
-from polyrides.models.passenger import Passenger
+from polyrides.models import Passenger
 
 
 RideType = TypeVar('RideType', bound='Ride')

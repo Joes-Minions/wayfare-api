@@ -3,12 +3,12 @@ import flask_restful
 from flask_restful import abort
 from flask_restful import fields as flask_fields
 from flask_restful import marshal_with
-
 from webargs import fields as webargs_fields
 from webargs.flaskparser import parser
 from webargs.flaskparser import use_args
 
-from polyrides.exceptions import DuplicateEmail
+from polyrides.exceptions import DuplicateEmailError
+from polyrides.exceptions import InvalidEmailError
 from polyrides.models.user import User
 
 
@@ -53,8 +53,11 @@ class Users(flask_restful.Resource):
     """Resource for interacting with `User` data."""
     @marshal_with(_response_schema)
     def get(self):
-        """Retrieve all users."""
-        return User.get_all()
+        """Retrieve all users.
+
+        NOTE: This method can be very memory-intensive and should not be used in production.
+        """
+        return list(User.get_all())
 
     @use_args(_make_request_schema(require_all=True))
     def post(self, request_body: dict):
@@ -73,7 +76,9 @@ class Users(flask_restful.Resource):
             user.create()
             # TODO: Attach a location header as a result of a successful POST request.
             return '', 201
-        except DuplicateEmail as ex:
+        except DuplicateEmailError as ex:
+            abort(400, message=ex.message)
+        except InvalidEmailError as ex:
             abort(400, message=ex.message)
 
     def delete(self):
@@ -102,6 +107,7 @@ class UserById(flask_restful.Resource):
             abort(404, message="User {} does not exist".format(user_id))
         return user
 
+    # TODO: This method should not require all fields.
     @use_args(_make_request_schema(require_all=True))
     def put(self, request_body: dict, user_id: int):
         """Create or update a user resource by id.

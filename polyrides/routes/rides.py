@@ -3,12 +3,12 @@ import flask_restful
 from flask_restful import abort
 from flask_restful import fields as flask_fields
 from flask_restful import marshal_with
-
 from webargs import fields as webargs_fields
 from webargs.flaskparser import parser
 from webargs.flaskparser import use_args
 
-from polyrides.models.user import Ride
+from polyrides.models import Ride
+
 
 # Fields to include in a response body.
 _response_schema = {  # pylint: disable=C0103
@@ -19,7 +19,6 @@ _response_schema = {  # pylint: disable=C0103
 _request_schema = {  # pylint: disable=C0103
     # Ride fields go here.
 }
-
 
 @parser.error_handler
 def _handle_parse_error(err, req, schema):

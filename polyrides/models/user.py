@@ -1,64 +1,61 @@
 # pylint: disable=E1101
 """Class wrapping a user table."""
-from typing import List
+import re
+
+from typing import TypeVar
 
 from polyrides import db
 from polyrides import models
+from polyrides.exceptions import DuplicateEmailError
+from polyrides.exceptions import InvalidEmailError
+from polyrides.models import AbstractModelBase
 
-from polyrides.exceptions import DuplicateEmail
+
+UserType = TypeVar('UserType', bound='User')
 
 
-class User(db.Model):
+class User(AbstractModelBase):
     """Data access object providing a static interface to a user table."""
     __tablename__ = models.tables.USER
 
-    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
     email = db.Column(db.String(64))
     password = db.Column(db.String(64))
 
-    def __init__(self, first_name: str, last_name: str, email: str, password: str):
-        """Init a `User` with the given values."""
-        if self.find_by_email(email):
-            raise DuplicateEmail(email)
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.password = password
-
-    def create(self):
-        """Add this `User` to the database."""
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self, new_fields: dict):
-        """Update this `User`.
+    @db.validates('first_name')
+    def validate_email(self, key: str, first_name: str):
+        """Check that a first name is valid.
 
         Args:
-            new_fields (dict): Dict containing new values for this `User`.
+            key (str): Dict key matching the validated field.
+            first_name (str): Value provided to field.
         """
-        db.session.query(User).filter(User.id == self.id).update(new_fields)
-        db.session.commit()
+        pass
 
-    def delete(self):
-        """Delete this `User` from the database."""
-        db.session.query(User).filter(User.id == self.id).delete()
-        db.session.commit()
+    @db.validates('email')
+    def validate_email(self, key: str, email: str):
+        """Check that an email is unique seems valid.
+
+        Args:
+            key (str): Dict key matching the validated field.
+            email (str): Value provided to field.
+
+        Return:
+            str: Email if valid.
+
+        Raises:
+            `InvalidEmailError`: If the given email does not have exactly one '@' and a '.' after the '@'.
+            `DuplicateEmailError`: If a user with the given email already exists.
+        """
+        if not re.compile(r'[^@]+@[^@]+\.[^@]+').match(email):
+            raise InvalidEmailError(email)
+        if self.find_by_email(email):
+            raise DuplicateEmailError(email)
+        return email
 
     @staticmethod
-    def get_all() -> List['User']:
-        """Return all `User`s in the database."""
-        return db.session.query(User).all()
-
-    @staticmethod
-    def delete_all():
-        """Return all `User`s in the database."""
-        db.session.query(User).delete()
-        db.session.commit()
-
-    @staticmethod
-    def find_by_id(user_id: int) -> 'User':
+    def find_by_id(user_id: int) -> UserType:
         """Look up a `User` by id.
 
         Args:
@@ -70,7 +67,7 @@ class User(db.Model):
         return db.session.query(User).filter(User.id == user_id).first()
 
     @staticmethod
-    def find_by_email(email: str) -> 'User':
+    def find_by_email(email: str) -> UserType:
         """Look up a `User` by email.
 
         Args:

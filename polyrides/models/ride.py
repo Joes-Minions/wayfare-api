@@ -1,13 +1,17 @@
 # pylint: disable=E1101
 """Class wrapping a Ride table."""
-from typing import List
+from typing import TypeVar
 
 from polyrides import db
 from polyrides import models
 
-from polyrides.models.location import Location
-from polyrides.models.time_range import TimeRange
-from polyrides.models.user import User
+from polyrides.models import AbstractModelBase
+from polyrides.models import Location
+from polyrides.models import TimeRange
+from polyrides.models import User
+
+
+RideType = TypeVar('RideType', bound='Ride')
 
 
 # quan: hmm...
@@ -25,15 +29,11 @@ _PASSENGERS = db.Table(
 )
 
 
-class Ride(db.Model):
+class Ride(AbstractModelBase):
     """Data access object providing a static interface to a Ride table."""
     __tablename__ = models.tables.RIDE
 
-    # when creating fields to marshal in resource, only include ??
-    # TODO : understand datetime attributes
-
     # Column Attributes
-    id = db.Column(db.Integer, primary_key=True)
     actual_departure_time = db.Column(db.DateTime)
     departure_date = db.Column(db.Date)
     capacity = db.Column(db.Integer)
@@ -60,38 +60,8 @@ class Ride(db.Model):
     start_location = db.relationship(Location, foreign_keys=[start_location_id])
     destination = db.relationship(Location, foreign_keys=[destination_id])
 
-    def create(self):
-        """Add this `Ride` to the database."""
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self, new_fields: dict):
-        """Update this `Ride`.
-
-        Args:
-            new_fields (dict): Dict containing new values for this `Ride`.
-        """
-        db.session.query(Ride).filter(Ride.id == self.id).update(new_fields)
-        db.session.commit()
-
-    def delete(self):
-        """Delete this `Ride` from the database."""
-        db.session.query(Ride).filter(Ride.id == self.id).delete()
-        db.session.commit()
-
     @staticmethod
-    def get_all() -> List['Ride']:
-        """Return all `Ride`s in the database."""
-        return db.session.query(Ride).all()
-
-    @staticmethod
-    def delete_all():
-        """Return all `Ride`s in the database."""
-        db.session.query(Ride).delete()
-        db.session.commit()
-
-    @staticmethod
-    def find_by_id(ride_id: int) -> 'Ride':
+    def find_by_id(ride_id: int) -> RideType:
         """Look up a `Ride` by id.
 
         Args:

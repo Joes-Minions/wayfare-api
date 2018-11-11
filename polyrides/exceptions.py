@@ -1,26 +1,32 @@
 """Exceptions raised by PolyRides API routes and models."""
 
-class DuplicateEmail(Exception):
+
+class PolyRidesError(Exception):
+    """Base Exception class for all user-defined errors."""
+    pass
+
+
+class DuplicateEmailError(PolyRidesError):
     """Exception indicating that a `User` email already exists.
 
     Attributes:
         email (str): Duplicate email that raised this exception.
     """
     def __init__(self, email: str):
-        """Init DuplicateEmail with the given email."""
+        """Init `DuplicateEmailError` with the given email."""
         self.email = email
         self.message = "Duplicate email: '{}'".format(email)
         super().__init__(self.message)
 
 
-class MissingField(Exception):
-    """Exception raised when a request body is missing a required field.
+class InvalidEmailError(PolyRidesError):
+    """Exception raised when a provided email value is invalid. 
 
     Attributes:
-        field (str): Name of missing field.
+        email (str): Invalid email that raised this exception.
     """
-    def __init__(self, field: str):
-        """Init MissingField with the given field_name."""
-        self.field = field
-        self.message = "Missing field: '{}'".format(field)
+    def __init__(self, email: str):
+        """Init `DuplicateEmailError` with the given email."""
+        self.email = email
+        self.message = "Invalid email: '{}'".format(email)
         super().__init__(self.message)

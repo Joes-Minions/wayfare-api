@@ -33,6 +33,8 @@ class User(AbstractModelBase):
 
         Raises:
             'InvalidFirstNameError': If the length of given first name is longer than 64
+                                    or contains special character
+
         """
         if len(first_name) > 64:
             raise InvalidFirstNameError(first_name)
@@ -52,6 +54,7 @@ class User(AbstractModelBase):
 
         Raises:
             'InvalidLastNameError': If the length of given first name is longer than 64
+                                    or contains special character
         """
         if len(last_name) > 64:
             raise InvalidLastNameError(last_name)

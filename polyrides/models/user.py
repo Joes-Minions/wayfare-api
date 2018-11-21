@@ -37,7 +37,7 @@ class User(AbstractModelBase):
         if len(first_name) > 64:
             raise InvalidFirstNameError(first_name)
 
-        if not re.compile('[~!@#$%^&*()+=_`]').search(first_name) == None:
+        if re.compile('[~!@#$%^&*()+=_`]').search(first_name):
             raise InvalidFirstNameError(first_name)
         
         return first_name
@@ -56,7 +56,7 @@ class User(AbstractModelBase):
         if len(last_name) > 64:
             raise InvalidLastNameError(last_name)
 
-        if not re.compile('[~!@#$%^&*()+=_`]').search(last_name) == None:
+        if re.compile('[~!@#$%^&*()+=_`]').search(last_name):
             raise InvalidLastNameError(last_name)
 
         return last_name
@@ -78,10 +78,13 @@ class User(AbstractModelBase):
         """
 
         """
+        REGEX
+
         ^@ = any char except @
         \ = inhibit the specialness of character
         https://developers.google.com/edu/python/regular-expressions
         """
+
         if not re.compile(r'[^@]+@[^@]+\.[^@]+').match(email):
             raise InvalidEmailError(email)
 
@@ -90,8 +93,7 @@ class User(AbstractModelBase):
 
         return email
 
-    @db.converts('name')
-    def convert_name(self, name: str):
+    def convert_name_to_lower(self, name: str):
         """Will be called after name is validated (no special char except '-').
 
         Args:

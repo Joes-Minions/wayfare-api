@@ -12,6 +12,7 @@ from polyrides.models import TimeRange
 from polyrides.models import User
 from polyrides.models import Passenger
 
+from typing import List
 
 RideType = TypeVar('RideType', bound='Ride')
 
@@ -56,3 +57,94 @@ class Ride(AbstractModelBase):
             Ride with the given id if found.
         """
         return db.session.query(Ride).filter(Ride.id == ride_id).first()
+
+    @staticmethod
+    def find_by_departure_date(departure_date: datetime) -> List['Ride']:
+        """Look up a `Ride` by departure date.
+
+        Args:
+            departure_date (datetime): id to match.
+
+        Returns:
+            `Ride`s associated with the given departure date if found.
+        """
+        return db.session.query(Ride).filter(Ride.departure_date == departure_date)
+
+    @staticmethod
+    def find_by_actual_departure_time(actual_departure_time: datetime) -> List['Ride']:
+        """Look up a `Ride` by actual departure time.
+
+        Args:
+            actual_departure_time (datetime): id to match.
+
+        Returns:
+            `Ride`s associated with the given actual departure time if found.
+        """
+        return db.session.query(Ride).filter(Ride.actual_departure_time == actual_departure_time)
+
+    @staticmethod
+    def find_by_time_range_id(time_range_id: int) -> List['Ride']:
+        """Look up a `Ride` by time_range_id.
+
+        Args:
+            time_range_id (int): id to match.
+
+        Returns:
+            `Ride`s associated with the given time_range_id if found.
+        """
+        return db.session.query(Ride).filter(Ride.time_range_id == time_range_id)
+
+    @staticmethod
+    def find_by_driver_id(driver_id: int) -> List['Ride']:
+        """Look up a `Ride` by driver_id.
+
+        Args:
+            driver_id (int): id to match.
+
+        Returns:
+            `Ride`s associated with the given driver_id if found.
+        """
+        return db.session.query(Ride).filter(Ride.driver_id == driver_id)
+
+    @staticmethod
+    def find_by_start_location_id(start_location_id: int) -> List['Ride']:
+        """Look up a `Ride` by start_location_id.
+
+        Args:
+            start_location_id (int): id to match.
+
+        Returns:
+            `Ride`s associated with the given start_location_ idif found.
+        """
+        return db.session.query(Ride).filter(Ride.start_location_id == start_location_id)
+
+    @staticmethod
+    def find_by_destination_id(destination_id: int) -> List['Ride']:
+        """Look up a `Ride` by destination_id.
+
+        Args:
+            destination (int): id to match.
+
+        Returns:
+            `Ride`s associated with the given destination_id if found.
+        """
+        return db.session.query(Ride).filter(Ride.destination_id == destination_id)
+
+    @db.validates('capacity')
+    def validate_capacity(self, capacity: str):
+        """Check that capacity is valid.
+
+        Args:
+            capacity (int): Value provided to field.
+
+        Return:
+            str: capacity if valid.
+
+        Raises:
+            `InvalidCapacityError`: If the given capacity is not int or over 8
+        """
+        if int(capacity) > 8:
+            raise InvalidCapacityError(capacity) # assuming 8 seats are reasonable number excluding driver
+
+        if not capacity.isdigit():
+            raise InvalidCapacityError(capacity)

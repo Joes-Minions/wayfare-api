@@ -43,3 +43,12 @@ class InvalidLastNameError(PolyRidesError):
         self.last_name = last_name
         self.message = "Invalid last name: '{}'".format(last_name)
         super().__init__(self.message)
+
+# for ride.py
+class InvalidCapacityError(PolyRidesError):
+    """Exception raised capacity is larger than 8.""" 
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.message = "Invalid capacity: '{}'".format(capacity)
+        super().__init__(self.message)

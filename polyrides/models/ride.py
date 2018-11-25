@@ -6,6 +6,7 @@ from polyrides import db
 from polyrides import models
 from datetime import datetime
 
+from polyrides.exceptions import InvalidCapacityError
 from polyrides.models import AbstractModelBase
 from polyrides.models import Location
 from polyrides.models import TimeRange
@@ -22,8 +23,11 @@ class Ride(AbstractModelBase):
     __tablename__ = models.tables.RIDE
 
     # Column Attributes
-    actual_departure_time = db.Column(db.DateTime)
-    departure_date = db.Column(db.DateTime)
+    #actual_departure_time and departure_date were originally db.DateTime
+    #but changed to db.String for the purpose of just getting this fucking thing to work
+    #
+    actual_departure_time = db.Column(db.String)
+    departure_date = db.Column(db.String)
     capacity = db.Column(db.Integer)
     time_range_id = db.Column(db.Integer,
                               db.ForeignKey(models.tables.TIME_RANGE + '.id'),
@@ -131,7 +135,7 @@ class Ride(AbstractModelBase):
         return db.session.query(Ride).filter(Ride.destination_id == destination_id)
 
     @db.validates('capacity')
-    def validate_capacity(self, capacity: str):
+    def validate_capacity(self, key: str, capacity: str):
         """Check that capacity is valid.
 
         Args:
@@ -146,5 +150,5 @@ class Ride(AbstractModelBase):
         if int(capacity) > 8:
             raise InvalidCapacityError(capacity) # assuming 8 seats are reasonable number excluding driver
 
-        if not capacity.isdigit():
+        if not str(capacity).isdigit():
             raise InvalidCapacityError(capacity)

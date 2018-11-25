@@ -4,6 +4,7 @@ import argparse
 from polyrides import app
 from polyrides import api
 from polyrides.routes import users
+from polyrides.routes import rides
 
 
 def _parse_args() -> argparse.Namespace:
@@ -26,6 +27,8 @@ def main():
 
     api.add_resource(users.Users, '/users')
     api.add_resource(users.UserById, '/users/<int:user_id>')
+    api.add_resource(rides.Rides, '/rides')
+    api.add_resource(rides.RidesById, '/rides/<int:ride_id>')
 
     app.debug = args.debug
     app.run(port=args.port)

@@ -14,10 +14,10 @@ class DuplicateEmailError(PolyRidesError):
         """Init `DuplicateEmailError` with the given email."""
         self.email = email
         self.message = "Duplicate email: '{}'".format(email)
-        super().__init__(self.message)
+        super().__init__(self.meInvalidEmailErrorssage)
 
 class InvalidEmailError(PolyRidesError):
-    """Exception raised when a provided email value is invalid. 
+    """Exception raised when a provided email value is invalid.
 
     Attributes:
         email (str): Invalid email that raised this exception.
@@ -29,7 +29,7 @@ class InvalidEmailError(PolyRidesError):
         super().__init__(self.message)
 
 class InvalidFirstNameError(PolyRidesError):
-    """Exception raised when length of provided first name is invalid.""" 
+    """Exception raised when length of provided first name is invalid."""
 
     def __init__(self, first_name: str):
         self.first_name = first_name
@@ -37,7 +37,7 @@ class InvalidFirstNameError(PolyRidesError):
         super().__init__(self.message)
 
 class InvalidLastNameError(PolyRidesError):
-    """Exception raised when length of provided last name is invalid.""" 
+    """Exception raised when length of provided last name is invalid."""
 
     def __init__(self, last_name: str):
         self.last_name = last_name
@@ -46,7 +46,7 @@ class InvalidLastNameError(PolyRidesError):
 
 # for ride.py
 class InvalidCapacityError(PolyRidesError):
-    """Exception raised capacity is larger than 8.""" 
+    """Exception raised capacity is larger than 8."""
 
     def __init__(self, capacity: int):
         self.capacity = capacity

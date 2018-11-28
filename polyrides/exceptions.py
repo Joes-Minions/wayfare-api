@@ -14,7 +14,7 @@ class DuplicateEmailError(PolyRidesError):
         """Init `DuplicateEmailError` with the given email."""
         self.email = email
         self.message = "Duplicate email: '{}'".format(email)
-        super().__init__(self.meInvalidEmailErrorssage)
+        super().__init__(self.message)
 
 class InvalidEmailError(PolyRidesError):
     """Exception raised when a provided email value is invalid.

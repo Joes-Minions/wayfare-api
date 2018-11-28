@@ -12,7 +12,7 @@ TimeRangeType = TypeVar('TimeRangeType', bound='TimeRange')
 
 
 class TimeRange(AbstractModelBase):
-    """Data access object providing a static interface to a user table."""
+    """Data access object providing a static interface to a time range table."""
     __tablename__ = models.tables.TIME_RANGE
 
     description = db.Column(db.String(255))
@@ -28,9 +28,9 @@ class TimeRange(AbstractModelBase):
             time_range_id (int): id to match.
 
         Returns:
-            TimeRange with the given id if found.
+            TimeRange with the given id if found, None if not found.
         """
-        return db.session.query(TimeRange).filter(TimeRange.id == time_range_id).first()
+        return db.session.query(TimeRange).get(time_range_id)
 
     @staticmethod
     def find_by_start_time(start_time: int) -> TimeRangeType:
@@ -40,7 +40,7 @@ class TimeRange(AbstractModelBase):
             start_time (int): start time to match.
 
         Returns:
-            TimeRange with the given start time if found.
+            TimeRange with the given start time if found, None if not found.
         """
         return db.session.query(TimeRange).filter(TimeRange.start_time == start_time).first()
 

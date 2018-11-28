@@ -25,9 +25,9 @@ class Status(AbstractModelBase):
             status_id (int): id to match.
 
         Returns:
-            `Status` with the given id if found.
+            `Status` with the given id if found, None if not found.
         """
-        return db.session.query(Status).filter(Status.id == status_id).first()
+        return db.session.query(Status).get(status_id)
 
     @staticmethod
     def find_by_description(description: str) -> StatusType:
@@ -37,6 +37,6 @@ class Status(AbstractModelBase):
             description: (str): description to match.
 
         Returns:
-            `Status` with the given description if found.
+            `Status` with the given description if found, None if not found.
         """
         return db.session.query(Status).filter(Status.description == description).first()

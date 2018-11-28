@@ -8,6 +8,8 @@ from polyrides import db
 from polyrides import models
 from polyrides.exceptions import DuplicateEmailError
 from polyrides.exceptions import InvalidEmailError
+from polyrides.exceptions import InvalidFirstNameError
+from polyrides.exceptions import InvalidLastNameError
 from polyrides.models import AbstractModelBase
 
 
@@ -124,9 +126,12 @@ class User(AbstractModelBase):
             id (int): id to match.
 
         Returns:
-            User with the given id if found.
+            User with the given id if found, None if not found.
+
+        See:
+        https://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.get
         """
-        return db.session.query(User).filter(User.id == user_id).first()
+        return db.session.query(User).get(user_id)
 
     @staticmethod
     def find_by_email(email: str) -> UserType:
@@ -136,6 +141,6 @@ class User(AbstractModelBase):
             email (str): email to match.
 
         Returns:
-            `User` with the given email if found.
+            `User` with the given email if found, None if not found.
         """
         return db.session.query(User).filter(User.email == email).first()

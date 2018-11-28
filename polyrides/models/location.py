@@ -25,9 +25,9 @@ class Location(AbstractModelBase):
             location_id (int): id to match.
 
         Returns:
-            `Location` with the given id if found.
+            `Location` with the given id if found, None if not found.
         """
-        return db.session.query(Location).filter(Location.id == location_id).first()
+        return db.session.query(Location).get(location_id)
 
     @staticmethod
     def find_by_name(name: str) -> LocationType:
@@ -37,6 +37,6 @@ class Location(AbstractModelBase):
             name (str): name to match.
 
         Returns:
-            `Location` with the given name if found.
+            `Location` with the given name if found, None if not found.
         """
         return db.session.query(Location).filter(Location.name == name).first()

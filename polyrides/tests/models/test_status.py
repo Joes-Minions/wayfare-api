@@ -3,14 +3,16 @@ import unittest
 
 from polyrides.models import Status
 
-class TestValidation(unittest.TestCase):
+# TODO: Test update, delete methods from AbstractModelBase
+
+class TestStatus(unittest.TestCase):
     """Tests for the Status model."""
     def setUp(self):
         Status.delete_all()
 
     def test_create(self):
         status = Status(
-            description = 'Pending'
+            description='Pending'
         )
         status.create()
         self.assertEqual(status.description, 'Pending')
@@ -19,37 +21,37 @@ class TestValidation(unittest.TestCase):
     def test_find_nonexistent_id(self):
         nonexistent_id = 5
         status_with_id = Status(
-            description = 'Accepted'
+            description='Accepted'
         )
         status_with_id.create()
-        result = status_with_id.find_by_id(nonexistent_id)
+        result = Status.find_by_id(nonexistent_id)
         self.assertEqual(result, None)
 
     def test_find_existing_id(self):
         existing_id = 1
         status_with_id = Status(
-            description = 'Pending'
+            description='Pending'
         )
         status_with_id.create()
-        result = status_with_id.find_by_id(existing_id)
+        result = Status.find_by_id(existing_id)
         self.assertEqual(result.id, existing_id)
 
     def test_find_nonexistent_desc(self):
         nonexistent_description = 'Pending'
         status_with_desc = Status(
-            description = 'Accepted'
+            description='Accepted'
         )
         status_with_desc.create()
-        result = status_with_desc.find_by_description(nonexistent_description)
+        result = Status.find_by_description(nonexistent_description)
         self.assertEqual(result, None)
 
     def test_find_existing_desc(self):
         existing_description = 'Accepted'
         status_with_desc = Status(
-            description = 'Accepted'
+            description='Accepted'
         )
         status_with_desc.create()
-        result = status_with_desc.find_by_description(existing_description)
+        result = Status.find_by_description(existing_description)
         self.assertEqual(result.description, existing_description)
 
 

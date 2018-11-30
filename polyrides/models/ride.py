@@ -1,9 +1,8 @@
 # pylint: disable=E1101
 """Class wrapping a Ride table."""
-from typing import TypeVar
+from typing import List, TypeVar
 
 from datetime import datetime
-from typing import List
 
 from polyrides import db
 from polyrides import models
@@ -17,6 +16,7 @@ from polyrides.models import Passenger
 
 
 RideType = TypeVar('RideType', bound='Ride')
+_MAX_CAPACITY = 8  # assuming 8 seats are reasonable number excluding driver
 
 
 class Ride(AbstractModelBase):
@@ -50,6 +50,52 @@ class Ride(AbstractModelBase):
     start_location = db.relationship(Location, foreign_keys=[start_location_id])
     destination = db.relationship(Location, foreign_keys=[destination_id])
 
+    @db.validates('capacity')
+    def validate_capacity(self, key: str, capacity: str):
+        """Check that capacity is valid.
+
+        Args:
+            capacity (str): Value provided to field.
+
+        Return:
+            int: capacity if valid.
+
+        Raises:
+            `InvalidCapacityError`: If the given capacity is not an int or greater than max.
+        """
+        if int(capacity) > _MAX_CAPACITY:
+            raise InvalidCapacityError(capacity)
+
+        if not str(capacity).isdigit():
+            raise InvalidCapacityError(capacity)
+
+        return int(capacity)
+
+    # @db.validates('time_range')
+    # TODO
+
+    # @db.validates('driver')
+    # TODO
+
+    # I actually don't know if this is supposed to be validating 'start_location' or 'start_location_id'.
+    @db.validates('start_location')
+    def validate_start_location(self, key: str, start_location: str):
+        """Check that a start location is valid.
+
+        Args:
+            start_location (str): Value provided to field.
+
+        Return:
+            int: start location id if valid.
+        """
+        # TODO
+        return start_location
+
+    # See start_location
+    # @db.validates('destination')
+    # TODO
+
+
     @staticmethod
     def find_by_id(ride_id: int) -> RideType:
         """Look up a `Ride` by id.
@@ -63,7 +109,7 @@ class Ride(AbstractModelBase):
         return db.session.query(Ride).filter(Ride.id == ride_id).first()
 
     @staticmethod
-    def find_by_departure_date(departure_date: datetime) -> List['Ride']:
+    def find_by_departure_date(departure_date: datetime) -> List[RideType]:
         """Look up a `Ride` by departure date.
 
         Args:
@@ -75,7 +121,7 @@ class Ride(AbstractModelBase):
         return db.session.query(Ride).filter(Ride.departure_date == departure_date)
 
     @staticmethod
-    def find_by_actual_departure_time(actual_departure_time: datetime) -> List['Ride']:
+    def find_by_actual_departure_time(actual_departure_time: datetime) -> List[RideType]:
         """Look up a `Ride` by actual departure time.
 
         Args:
@@ -111,7 +157,7 @@ class Ride(AbstractModelBase):
         return db.session.query(Ride).filter(Ride.driver_id == driver_id)
 
     @staticmethod
-    def find_by_start_location_id(start_location_id: int) -> List['Ride']:
+    def find_by_start_location_id(start_location_id: int) -> List[RideType]:
         """Look up a `Ride` by start_location_id.
 
         Args:
@@ -123,7 +169,7 @@ class Ride(AbstractModelBase):
         return db.session.query(Ride).filter(Ride.start_location_id == start_location_id)
 
     @staticmethod
-    def find_by_destination_id(destination_id: int) -> List['Ride']:
+    def find_by_destination_id(destination_id: int) -> List[RideType]:
         """Look up a `Ride` by destination_id.
 
         Args:
@@ -133,25 +179,6 @@ class Ride(AbstractModelBase):
             `Ride`s associated with the given destination_id if found.
         """
         return db.session.query(Ride).filter(Ride.destination_id == destination_id)
-
-    @db.validates('capacity')
-    def validate_capacity(self, key: str, capacity: str):
-        """Check that capacity is valid.
-
-        Args:
-            capacity (int): Value provided to field.
-
-        Return:
-            str: capacity if valid.
-
-        Raises:
-            `InvalidCapacityError`: If the given capacity is not int or over 8
-        """
-        if int(capacity) > 8:
-            raise InvalidCapacityError(capacity) # assuming 8 seats are reasonable number excluding driver
-
-        if not str(capacity).isdigit():
-            raise InvalidCapacityError(capacity)
 
     def __repr__(self) -> str:
         """Return a string representation of this `Ride`."""

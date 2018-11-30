@@ -17,7 +17,6 @@ BASE_URL = '/rides'
 # Fields to include in a response body.
 _response_schema = {  # pylint: disable=C0103
     'id': flask_fields.Integer,
-    'actual_departure_time': flask_fields.String,
     'departure_date': flask_fields.String,
     'capacity': flask_fields.Integer,
     'time_range_id': flask_fields.Integer,
@@ -79,11 +78,9 @@ class Rides(flask_restful.Resource):
             request_body (dict): Data extracted from request body.
         """
         try:
-            adt_formatted = dateutil.parser.parse(request_body['actual_departure_time'])
-            dd_formatted = dateutil.parser.parse(request_body['departure_date'])
+            departure_date = dateutil.parser.parse(request_body['departure_date'])
             ride = Ride(
-                actual_departure_time=adt_formatted,
-                departure_date=dd_formatted,
+                departure_date=departure_date,
                 capacity=request_body['capacity'],
                 time_range_id=request_body['time_range_id'],
                 driver_id=request_body['driver_id'],

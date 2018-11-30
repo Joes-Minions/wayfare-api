@@ -10,6 +10,9 @@ from webargs.flaskparser import use_args
 from polyrides.exceptions import InvalidCapacityError
 from polyrides.models import Ride
 
+import datetime
+import dateutil.parser
+
 
 # Fields to include in a response body.
 _response_schema = {  # pylint: disable=C0103
@@ -76,9 +79,11 @@ class Rides(flask_restful.Resource):
             request_body (dict): Data extracted from request body.
         """
         try:
+            adt_formatted = dateutil.parser.parse(request_body['actual_departure_time'])
+            dd_formatted = dateutil.parser.parse(request_body['departure_date'])
             ride = Ride(
-                actual_departure_time=request_body['actual_departure_time'],
-                departure_date=request_body['departure_date'],
+                actual_departure_time=adt_formatted,
+                departure_date=dd_formatted,
                 capacity=request_body['capacity'],
                 time_range_id=request_body['time_range_id'],
                 driver_id=request_body['driver_id'],
@@ -131,7 +136,7 @@ class RidesById(flask_restful.Resource):
         if ride:
             ride.update(request_body)
             return '', 200
-        ride = ride(**request_body)
+        ride = Ride(**request_body)
         ride.create()
         return '', 201
 

@@ -27,8 +27,8 @@ class Ride(AbstractModelBase):
     #actual_departure_time and departure_date were originally db.DateTime
     #but changed to db.String for the purpose of just getting this fucking thing to work
     #
-    actual_departure_time = db.Column(db.String)
-    departure_date = db.Column(db.String)
+    actual_departure_time = db.Column(db.DateTime)
+    departure_date = db.Column(db.DateTime)
     capacity = db.Column(db.Integer)
     time_range_id = db.Column(db.Integer,
                               db.ForeignKey(models.tables.TIME_RANGE + '.id'),

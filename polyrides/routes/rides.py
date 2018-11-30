@@ -7,12 +7,12 @@ from webargs import fields as webargs_fields
 from webargs.flaskparser import parser
 from webargs.flaskparser import use_args
 
+import dateutil.parser
+
 from polyrides.exceptions import InvalidCapacityError
 from polyrides.models import Ride
 
-import datetime
-import dateutil.parser
-
+BASE_URL = '/rides'
 
 # Fields to include in a response body.
 _response_schema = {  # pylint: disable=C0103
@@ -91,8 +91,7 @@ class Rides(flask_restful.Resource):
                 destination_id=request_body['destination_id']
             )
             ride.create()
-            # TODO: Attach a location header as a result of a successful POST request.
-            return '', 201
+            return '', 201, {'location': f'{BASE_URL}/{ride.id}'}
         except InvalidCapacityError as ex:
             abort(400, message=ex.message)
 
@@ -146,8 +145,8 @@ class RidesById(flask_restful.Resource):
         Args:
             ride_id (int): id of the ride to delete
         """
-        ride = ride.find_by_id(ride_id)
+        ride = Ride.find_by_id(ride_id)
         if ride:
-            ride.delete()
+            ride.delete_instance()
             return '', 200
         abort(404, message="Ride {} does not exist".format(ride_id))

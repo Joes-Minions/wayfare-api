@@ -25,10 +25,10 @@ def main():
     """Set up and run the Flask app."""
     args = _parse_args()
 
-    api.add_resource(users.Users, '/users')
-    api.add_resource(users.UserById, '/users/<int:user_id>')
-    api.add_resource(rides.Rides, '/rides')
-    api.add_resource(rides.RidesById, '/rides/<int:ride_id>')
+    api.add_resource(users.Users, users.BASE_URL)
+    api.add_resource(users.UserById, f'{users.BASE_URL}/<int:user_id>')
+    api.add_resource(rides.Rides, rides.BASE_URL)
+    api.add_resource(rides.RidesById, f'{rides.BASE_URL}/<int:ride_id>')
 
     app.debug = args.debug
     app.run(port=args.port)

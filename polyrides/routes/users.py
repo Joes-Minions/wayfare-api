@@ -18,8 +18,7 @@ _response_schema = {  # pylint: disable=C0103
     'id': flask_fields.Integer,
     'first_name': flask_fields.String,
     'last_name': flask_fields.String,
-    'email': flask_fields.String,
-    'password': flask_fields.String
+    'email': flask_fields.String
 }
 
 def _make_request_schema(require_all: bool = False) -> dict:

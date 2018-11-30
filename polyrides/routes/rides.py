@@ -17,13 +17,13 @@ BASE_URL = '/rides'
 # Fields to include in a response body.
 _response_schema = {  # pylint: disable=C0103
     'id': flask_fields.Integer,
+    'actual_departure_time': flask_fields.String,
     'departure_date': flask_fields.String,
     'capacity': flask_fields.Integer,
     'time_range_id': flask_fields.Integer,
     'driver_id': flask_fields.Integer,
     'start_location_id': flask_fields.Integer,
     'destination_id': flask_fields.Integer
-    # Other Ride fields go here.
 }
 
 _request_schema = {  # pylint: disable=C0103
@@ -37,7 +37,6 @@ def _make_request_schema(require_all: bool = False) -> dict:
         require_all (bool): True to require that all fields be present.
     """
     return {
-        'actual_departure_time': webargs_fields.String(required=require_all),  # pylint: disable=E1101
         'departure_date': webargs_fields.String(required=require_all),  # pylint: disable=E1101
         'capacity': webargs_fields.Integer(required=require_all),  # pylint: disable=E1101
         'time_range_id': webargs_fields.Integer(required=require_all),  # pylint: disable=E1101

@@ -120,6 +120,7 @@ class TestUsers(TestUserBase):
         new_user.update({
             'id': new_user_id
         })
+        new_user.pop('password')
         get_response = requests.get(self.endpoint)
         self.assertEqual(get_response.status_code, 200)
         expected_location = '{}/{}'.format(self.endpoint, new_user['id'])
@@ -140,6 +141,7 @@ class TestUserById(TestUserBase):
         }
         response = requests.get(f'{self.endpoint}/{first_user_id}')
         self.assertEqual(response.status_code, 200)
+        first_user.pop('password')
         self.assertEqual(response.json(), first_user)
 
     def test_get_nonexistent_id(self):
@@ -151,13 +153,13 @@ class TestUserById(TestUserBase):
         first_user_id = 1
         updated_first_user = dict(_TEST_USERS[0])
         updated_first_user.update({
-            'password': 'newpassword123',
+            'first_name': 'newname',
         })
         put_response = requests.put(f'{self.endpoint}/{first_user_id}', updated_first_user)
         self.assertEqual(put_response.status_code, 200)
         get_response = requests.get(f'{self.endpoint}/{first_user_id}')
         self.assertEqual(get_response.status_code, 200)
-        self.assertEqual(get_response.json()['password'], updated_first_user['password'])
+        self.assertEqual(get_response.json()['first_name'], updated_first_user['first_name'])
 
     # Rethinking how PUT on a nonexistent id should work.
     # def test_update_nonexistent_user(self):

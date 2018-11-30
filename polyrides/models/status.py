@@ -40,3 +40,7 @@ class Status(AbstractModelBase):
             `Status` with the given description if found, None if not found.
         """
         return db.session.query(Status).filter(Status.description == description).first()
+
+    def __repr__(self) -> str:
+        """Return a string representation of this `Status`."""
+        return f'Status {self.id}: {self.description}'

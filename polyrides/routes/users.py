@@ -11,6 +11,7 @@ from polyrides.exceptions import DuplicateEmailError
 from polyrides.exceptions import InvalidEmailError
 from polyrides.models.user import User
 
+BASE_URL = '/users'
 
 # Fields to include in a response body.
 _response_schema = {  # pylint: disable=C0103
@@ -75,7 +76,7 @@ class Users(flask_restful.Resource):
             )
             user.create()
             # TODO: Attach a location header as a result of a successful POST request.
-            return '', 201
+            return '', 201, {'location': f'{BASE_URL}/{user.id}'}
         except DuplicateEmailError as ex:
             abort(400, message=ex.message)
         except InvalidEmailError as ex:
@@ -118,7 +119,7 @@ class UserById(flask_restful.Resource):
         """
         user = User.find_by_id(user_id)
         if user:
-            user.update(request_body)
+            user.update_instance(request_body)
             return '', 200
         user = User(**request_body)
         user.create()
@@ -132,6 +133,6 @@ class UserById(flask_restful.Resource):
         """
         user = User.find_by_id(user_id)
         if user:
-            user.delete()
+            user.delete_instance()
             return '', 200
         abort(404, message="User {} does not exist".format(user_id))

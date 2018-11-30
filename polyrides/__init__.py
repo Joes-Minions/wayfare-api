@@ -14,6 +14,7 @@ app = Flask(__name__)  # pylint: disable=C0103
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 
 db = flask_sqlalchemy.SQLAlchemy(app)  # pylint: disable=C0103
+# These imports are here to prevent errors from missing circular imports
 from polyrides.models import Location  # pylint: disable=C0413
 from polyrides.models import Status  # pylint: disable=C0413
 from polyrides.models import TimeRange  # pylint: disable=C0413

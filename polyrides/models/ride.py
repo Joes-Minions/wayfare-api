@@ -2,9 +2,11 @@
 """Class wrapping a Ride table."""
 from typing import TypeVar
 
+from datetime import datetime
+from typing import List
+
 from polyrides import db
 from polyrides import models
-from datetime import datetime
 
 from polyrides.exceptions import InvalidCapacityError
 from polyrides.models import AbstractModelBase
@@ -13,7 +15,6 @@ from polyrides.models import TimeRange
 from polyrides.models import User
 from polyrides.models import Passenger
 
-from typing import List
 
 RideType = TypeVar('RideType', bound='Ride')
 
@@ -44,7 +45,6 @@ class Ride(AbstractModelBase):
 
     # Relationship Attributes
     time_range = db.relationship(TimeRange)
-    # TODO : Figure out this backref thing
     driver = db.relationship(User, backref='drives', lazy=True)
     passengers = db.relationship(Passenger, cascade="all, delete-orphan")
     start_location = db.relationship(Location, foreign_keys=[start_location_id])
@@ -152,3 +152,7 @@ class Ride(AbstractModelBase):
 
         if not str(capacity).isdigit():
             raise InvalidCapacityError(capacity)
+
+    def __repr__(self) -> str:
+        """Return a string representation of this `Ride`."""
+        return f'TODO'

@@ -14,36 +14,37 @@ from polyrides.models import AbstractModelBase
 
 
 UserType = TypeVar('UserType', bound='User')
-
+_MAX_LENGTH = 64
+_INVALID_CHARS = r'[~!@#$%^&*()+=_`]'
 
 class User(AbstractModelBase):
     """Data access object providing a static interface to a user table."""
     __tablename__ = models.tables.USER
 
-    first_name = db.Column(db.String(64))
-    last_name = db.Column(db.String(64))
-    email = db.Column(db.String(64))
-    password = db.Column(db.String(64))
+    first_name = db.Column(db.String(_MAX_LENGTH))
+    last_name = db.Column(db.String(_MAX_LENGTH))
+    email = db.Column(db.String(_MAX_LENGTH))
+    password = db.Column(db.String(_MAX_LENGTH))
 
     @db.validates('first_name')
     def validate_first_name(self, key: str, first_name: str):
         """Check that a first name is valid.
 
         Args:
-            key (str): Dict key matching the validated field.
+            key (str): Dict key corresponding to the field being validated.
             first_name (str): Value provided to field.
 
         Raises:
             'InvalidFirstNameError': If the length of given first name is longer than 64
-                                    or contains special character
+                                     or contains an invalid character.
 
         """
-        if len(first_name) > 64:
+        if len(first_name) > _MAX_LENGTH:
             raise InvalidFirstNameError(first_name)
 
-        if re.compile('[~!@#$%^&*()+=_`]').search(first_name):
+        if re.compile(_INVALID_CHARS).search(first_name):
             raise InvalidFirstNameError(first_name)
-        
+
         return first_name
 
     @db.validates('last_name')
@@ -51,17 +52,17 @@ class User(AbstractModelBase):
         """Check that a first name is valid.
 
         Args:
-            key (str): Dict key matching the validated field.
+            key (str): Dict key corresponding to the field being validated.
             last_name (str): Value provided to field.
 
         Raises:
             'InvalidLastNameError': If the length of given first name is longer than 64
-                                    or contains special character
+                                     or contains an invalid character.
         """
-        if len(last_name) > 64:
+        if len(last_name) > _MAX_LENGTH:
             raise InvalidLastNameError(last_name)
 
-        if re.compile('[~!@#$%^&*()+=_`]').search(last_name):
+        if re.compile(_INVALID_CHARS).search(last_name):
             raise InvalidLastNameError(last_name)
 
         return last_name
@@ -71,7 +72,7 @@ class User(AbstractModelBase):
         """Check that an email is unique seems valid.
 
         Args:
-            key (str): Dict key matching the validated field.
+            key (str): Dict key corresponding to the field being validated.
             email (str): Value provided to field.
 
         Return:
@@ -81,14 +82,11 @@ class User(AbstractModelBase):
             `InvalidEmailError`: If the given email does not have exactly one '@' and a '.' after the '@'.
             `DuplicateEmailError`: If a user with the given email already exists.
         """
-
-        """
-        REGEX
-
-        ^@ = any char except @
-        \ = inhibit the specialness of character
-        https://developers.google.com/edu/python/regular-expressions
-        """
+        # REGEX notes:
+        #
+        # ^@ = any char except @
+        # \ = inhibit the specialness of character (aka escape character)
+        # https://developers.google.com/edu/python/regular-expressions
 
         if not re.compile(r'[^@]+@[^@]+\.[^@]+').match(email):
             raise InvalidEmailError(email)
@@ -97,26 +95,6 @@ class User(AbstractModelBase):
             raise DuplicateEmailError(email)
 
         return email
-
-    def convert_name_to_lower(self, name: str):
-        """Will be called after name is validated (no special char except '-').
-
-        Args:
-            name (str): name that will be converted into lower case.
-        
-        Return:
-            str: name converted into lower case.
-
-        """
-        name = name.split("-")
-        res = []
-
-        for x in name:
-            res.append(x.lower())
-
-        joined = "-".join(res)
-
-        return joined
 
     @staticmethod
     def find_by_id(user_id: int) -> UserType:
@@ -144,3 +122,7 @@ class User(AbstractModelBase):
             `User` with the given email if found, None if not found.
         """
         return db.session.query(User).filter(User.email == email).first()
+
+    def __repr__(self) -> str:
+        """Return a string representation of this `User`."""
+        return f'TODO'

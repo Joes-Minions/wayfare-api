@@ -16,6 +16,7 @@ class Location(AbstractModelBase):
     __tablename__ = models.tables.LOCATION
 
     name = db.Column(db.String(128))
+    db.UniqueConstraint('name')
 
     @staticmethod
     def find_by_id(location_id: int) -> LocationType:
@@ -40,3 +41,7 @@ class Location(AbstractModelBase):
             `Location` with the given name if found, None if not found.
         """
         return db.session.query(Location).filter(Location.name == name).first()
+
+    def __repr__(self) -> str:
+        """Return a string representation of this `Location`."""
+        return f'Location {self.id}: {self.name}'

@@ -3,6 +3,8 @@ import unittest
 
 import requests
 
+from polyrides.routes.users import BASE_URL
+
 _TEST_USERS = [
     {  # id: 1
         'first_name': 'Oliver',
@@ -30,20 +32,24 @@ _TEST_USERS = [
     }
 ]
 
-class TestUsers(unittest.TestCase):
-    """Tests for the Users resource."""
+
+class TestUserBase(unittest.TestCase):
+    """Base class for user route tests. Provides a common test setUp method."""
     def setUp(self):
         """Replace all source data with test user data."""
-        scheme = 'http://'
-        base_url = 'localhost'
-        port = 5000
-        route = 'users'
-        self.endpoint = '{}{}:{}/{}'.format(scheme, base_url, port, route)
+        self.scheme = 'http://'
+        self.base_url = 'localhost'
+        self.port = 5000
+        self.route = BASE_URL
+        self.endpoint = f'{self.scheme}{self.base_url}:{self.port}{self.route}'
         # Clear source and load all test data.
         requests.delete(self.endpoint)
         for user in _TEST_USERS:
             requests.post(self.endpoint, user)
 
+
+class TestUsers(TestUserBase):
+    """Tests for the Users resource."""
     def test_get_and_id_generation(self):
         response = requests.get(self.endpoint).json()
         self.assertEqual(len(response), 4)
@@ -106,16 +112,17 @@ class TestUsers(unittest.TestCase):
             'password': 'test'
         }
         post_response = requests.post(self.endpoint, new_user)
-        print(post_response.json())
         self.assertEqual(post_response.status_code, 201)
-        # self.assertEqual(post_response.json(), '')
+        self.assertEqual(post_response.json(), '')  # Expect an empty body.
+        new_user_id = len(_TEST_USERS) + 1
+        expected_location = f'{self.endpoint}/{new_user_id}'
+        self.assertEqual(post_response.headers['Location'], expected_location)
         new_user.update({
-            'id': len(_TEST_USERS) + 1
+            'id': new_user_id
         })
         get_response = requests.get(self.endpoint)
         self.assertEqual(get_response.status_code, 200)
         expected_location = '{}/{}'.format(self.endpoint, new_user['id'])
-        # self.assertEqual(get_response.headers['Location'], expected_location)
         self.assertEqual(get_response.json()[-1], new_user)
 
     def test_put_not_allowed(self):
@@ -123,33 +130,21 @@ class TestUsers(unittest.TestCase):
         self.assertEqual(response.status_code, 405)
 
 
-class TestUserById(unittest.TestCase):
+class TestUserById(TestUserBase):
     """Tests for the UserById resource."""
-    def setUp(self):
-        """Replace all source data with test user data."""
-        scheme = 'http://'
-        base_url = 'localhost'
-        port = 5000
-        route = 'users'
-        self.endpoint = '{}{}:{}/{}'.format(scheme, base_url, port, route)
-        # Clear source and load all test data.
-        requests.delete(self.endpoint)
-        for user in _TEST_USERS:
-            requests.post(self.endpoint, user)
-
     def test_get_first_user(self):
         first_user_id = 1
         first_user = {
             'id': first_user_id,
             **_TEST_USERS[0]
         }
-        response = requests.get('{}/{}'.format(self.endpoint, first_user_id))
+        response = requests.get(f'{self.endpoint}/{first_user_id}')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), first_user)
 
     def test_get_nonexistent_id(self):
         nonexistent_id = 9001
-        response = requests.get('{}/{}'.format(self.endpoint, nonexistent_id))
+        response = requests.get(f'{self.endpoint}/{nonexistent_id}')
         self.assertEqual(response.status_code, 404)
 
     def test_update_first_user(self):
@@ -158,9 +153,9 @@ class TestUserById(unittest.TestCase):
         updated_first_user.update({
             'password': 'newpassword123',
         })
-        put_response = requests.put('{}/{}'.format(self.endpoint, first_user_id), updated_first_user)
+        put_response = requests.put(f'{self.endpoint}/{first_user_id}', updated_first_user)
         self.assertEqual(put_response.status_code, 200)
-        get_response = requests.get('{}/{}'.format(self.endpoint, first_user_id))
+        get_response = requests.get(f'{self.endpoint}/{first_user_id}')
         self.assertEqual(get_response.status_code, 200)
         self.assertEqual(get_response.json()['password'], updated_first_user['password'])
 
@@ -172,14 +167,14 @@ class TestUserById(unittest.TestCase):
 
     def test_delete_first_user(self):
         first_user_id = 1
-        response = requests.delete('{}/{}'.format(self.endpoint, first_user_id))
+        response = requests.delete(f'{self.endpoint}/{first_user_id}')
         self.assertEqual(response.status_code, 200)
         for user in requests.get(self.endpoint).json():
             self.assertNotEqual(user['id'], first_user_id)
 
     def test_delete_nonexistent_user(self):
         nonexistent_id = 9001
-        delete_response = requests.delete('{}/{}'.format(self.endpoint, nonexistent_id))
+        delete_response = requests.delete(f'{self.endpoint}/{nonexistent_id}')
         self.assertEqual(delete_response.status_code, 404)
         get_response = requests.get(self.endpoint)
         self.assertEqual(len(get_response.json()), len(_TEST_USERS))

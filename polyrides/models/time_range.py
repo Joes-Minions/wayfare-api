@@ -19,7 +19,6 @@ class TimeRange(AbstractModelBase):
     start_time = db.Column(db.Integer)
     end_time = db.Column(db.Integer)
 
-    # TODO: check this
     @staticmethod
     def find_by_id(time_range_id: int) -> TimeRangeType:
         """Look up a `TimeRange` by id.
@@ -55,3 +54,7 @@ class TimeRange(AbstractModelBase):
             TimeRange with the given end time if found.
         """
         return db.session.query(TimeRange).filter(TimeRange.end_time == end_time).first()
+
+    def __repr__(self) -> str:
+        """Return a string representation of this `TimeRange`."""
+        return f'TODO'

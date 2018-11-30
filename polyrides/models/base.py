@@ -34,18 +34,18 @@ class AbstractModelBase(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update(self, new_fields: dict):
+    def update_instance(self, new_fields: dict):
         """Update this model instance in the database.
 
         Args:
             new_fields (dict): Dict containing new values for this `User`.
         """
-        db.session.query(self.__class__).filter(self.__class__.id == self.id).update(new_fields)
+        db.session.query(self.__class__).filter_by(id=self.id).update(new_fields)
         db.session.commit()
 
-    def delete(self):
+    def delete_instance(self):
         """Delete this model instance from the database."""
-        db.session.query(self.__class__).filter(self.__class__.id == self.id).delete()
+        db.session.query(self.__class__).filter_by(id=self.id).delete()
         db.session.commit()
 
     @classmethod

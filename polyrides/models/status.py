@@ -43,4 +43,8 @@ class Status(AbstractModelBase):
 
     def __repr__(self) -> str:
         """Return a string representation of this `Status`."""
-        return f'Status {self.id}: {self.description}'
+        return f"Status({self.id}, '{self.description}')"
+
+    def __str__(self) -> str:
+        """Return this `Status` as a friendly string."""
+        return f"{self.id}. {self.description}"

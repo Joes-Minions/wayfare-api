@@ -9,6 +9,8 @@ from polyrides.models import AbstractModelBase
 
 PassengerType = TypeVar('PassengerType', bound='Location')
 
+# TODO: Make this just a table, move functionality for passenger status into User and Ride models.
+
 
 class Passenger(AbstractModelBase):
     """Data access object providing a static interface to a Passenger table."""
@@ -45,7 +47,7 @@ class Passenger(AbstractModelBase):
         Args:
             new_status (int): id of new status.
         """
-        # This should create a new ru
+        # This should create a new row.
         pass
 
     @staticmethod

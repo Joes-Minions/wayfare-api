@@ -44,4 +44,8 @@ class Location(AbstractModelBase):
 
     def __repr__(self) -> str:
         """Return a string representation of this `Location`."""
-        return f'Location {self.id}: {self.name}'
+        return f"Location({self.id}, '{self.name}')"
+
+    def __str__(self) -> str:
+        """Return this `Location` as a friendly string."""
+        return f"{self.id}. {self.name}"

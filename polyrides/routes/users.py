@@ -74,7 +74,6 @@ class Users(flask_restful.Resource):
                 password=request_body['password']
             )
             user.create()
-            # TODO: Attach a location header as a result of a successful POST request.
             return '', 201, {'location': f'{BASE_URL}/{user.id}'}
         except DuplicateEmailError as ex:
             abort(400, message=ex.message)

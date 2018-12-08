@@ -2,9 +2,9 @@
 """Class wrapping a Passenger table."""
 from typing import List, TypeVar
 
-from polyrides import db
-from polyrides import models
-from polyrides.models import AbstractModelBase
+from wayfare import db
+from wayfare import models
+from wayfare.models import AbstractModelBase
 
 
 PassengerType = TypeVar('PassengerType', bound='Location')

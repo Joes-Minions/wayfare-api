@@ -3,7 +3,7 @@ import unittest
 
 import requests
 
-from polyrides.routes.users import BASE_URL
+from wayfare.routes.users import BASE_URL
 
 _TEST_USERS = [
     {  # id: 1

@@ -7,9 +7,9 @@ from webargs import fields as webargs_fields
 from webargs.flaskparser import parser
 from webargs.flaskparser import use_args
 
-from polyrides.exceptions import DuplicateEmailError
-from polyrides.exceptions import InvalidEmailError
-from polyrides.models.user import User
+from wayfare.exceptions import DuplicateEmailError
+from wayfare.exceptions import InvalidEmailError
+from wayfare.models.user import User
 
 BASE_URL = '/users'
 

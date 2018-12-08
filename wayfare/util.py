@@ -24,7 +24,7 @@ import os
 from typing import Any
 
 
-_ROOT_DIR = 'polyrides'
+_ROOT_DIR = 'wayfare'
 
 
 def compare_datestrings(date_string_a: str, date_string_b: str) -> int:
@@ -82,10 +82,10 @@ def root_join(*path: str) -> str:
 
     Example:
         On a Unix-based OS:
-        root_join('test') -> '/path/to/polyrides-api/polyrides/test'
+        root_join('test') -> '/path/to/wayfare-api/wayfare/test'
 
         On Windows: (-_-)
-        root_join('data', 'test.json') -> '\\path\\to\\polyrides-api\\polyrides\\data\\test.json'
+        root_join('data', 'test.json') -> '\\path\\to\\wayfare-api\\wayfare\\data\\test.json'
     """
     base = os.path.abspath(os.path.dirname(__name__))
     return os.path.join(base, _ROOT_DIR, *path)

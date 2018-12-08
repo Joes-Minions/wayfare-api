@@ -3,7 +3,7 @@
 from typing import List
 from typing import TypeVar
 
-from polyrides import db
+from wayfare import db
 
 
 T = TypeVar('T', bound='AbstractModelBase')

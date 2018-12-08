@@ -9,8 +9,8 @@ from webargs.flaskparser import use_args
 
 import dateutil.parser
 
-from polyrides.exceptions import InvalidCapacityError
-from polyrides.models import Ride
+from wayfare.exceptions import InvalidCapacityError
+from wayfare.models import Ride
 
 BASE_URL = '/rides'
 

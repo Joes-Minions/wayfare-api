@@ -1,7 +1,7 @@
 """Unit tests for TimeRange models."""
 import unittest
 
-from polyrides.models import TimeRange
+from wayfare.models import TimeRange
 
 # TODO: Test update, delete methods from AbstractModelBase
 

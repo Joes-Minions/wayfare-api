@@ -4,15 +4,15 @@ from typing import List, TypeVar
 
 from datetime import datetime
 
-from polyrides import db
-from polyrides import models
+from wayfare import db
+from wayfare import models
 
-from polyrides.exceptions import InvalidCapacityError
-from polyrides.models import AbstractModelBase
-from polyrides.models import Location
-from polyrides.models import TimeRange
-from polyrides.models import User
-from polyrides.models import Passenger
+from wayfare.exceptions import InvalidCapacityError
+from wayfare.models import AbstractModelBase
+from wayfare.models import Location
+from wayfare.models import TimeRange
+from wayfare.models import User
+from wayfare.models import Passenger
 
 
 RideType = TypeVar('RideType', bound='Ride')

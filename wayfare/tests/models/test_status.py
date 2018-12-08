@@ -1,7 +1,7 @@
 """Unit tests for Status models."""
 import unittest
 
-from polyrides.models import Status
+from wayfare.models import Status
 
 # TODO: Test update, delete methods from AbstractModelBase
 

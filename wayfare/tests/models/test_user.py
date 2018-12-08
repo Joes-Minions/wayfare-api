@@ -1,11 +1,11 @@
 """Unit tests for User models."""
 import unittest
 
-from polyrides.exceptions import DuplicateEmailError
-from polyrides.exceptions import InvalidEmailError
-from polyrides.exceptions import InvalidFirstNameError
-from polyrides.exceptions import InvalidLastNameError
-from polyrides.models import User
+from wayfare.exceptions import DuplicateEmailError
+from wayfare.exceptions import InvalidEmailError
+from wayfare.exceptions import InvalidFirstNameError
+from wayfare.exceptions import InvalidLastNameError
+from wayfare.models import User
 
 # TODO: Test update, delete methods from AbstractModelBase
 

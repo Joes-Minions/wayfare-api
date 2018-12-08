@@ -2,7 +2,7 @@
 """
 This file shouldn't be in the develop branch but it is because I want to quickly move forward.
 For the future, files in the repository should be in finalized (or on the way to finalized) state
-and should be essential to running the app. 
+and should be essential to running the app.
 
 When adding files to the repo, think
 Can the app run without this?
@@ -13,13 +13,13 @@ Can the app run without this?
   my code is working.
 """
 
-from polyrides.models.location import Location
-from polyrides.models.ride import Ride
-from polyrides.models.time_range import TimeRange
-from polyrides.models.user import User
+from wayfare.models.location import Location
+from wayfare.models.ride import Ride
+from wayfare.models.time_range import TimeRange
+from wayfare.models.user import User
 from datetime import datetime
-from polyrides.models.status import Status
-from polyrides.models.passenger import Passenger
+from wayfare.models.status import Status
+from wayfare.models.passenger import Passenger
 
 
 

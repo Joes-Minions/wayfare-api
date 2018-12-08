@@ -1,4 +1,4 @@
-"""The main driver and entrypoint for the Polyrides API."""
+"""The main driver and entrypoint for the Wayfare API."""
 
 import argparse
 import flask_restful
@@ -15,12 +15,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 
 db = flask_sqlalchemy.SQLAlchemy(app)  # pylint: disable=C0103
 # These imports are here to prevent errors from missing circular imports
-from polyrides.models import Location  # pylint: disable=C0413
-from polyrides.models import Status  # pylint: disable=C0413
-from polyrides.models import TimeRange  # pylint: disable=C0413
-from polyrides.models import User  # pylint: disable=C0413
-from polyrides.models import Ride  # pylint: disable=C0413
-from polyrides.models import Passenger  # pylint: disable=C0413
+from wayfare.models import Location  # pylint: disable=C0413
+from wayfare.models import Status  # pylint: disable=C0413
+from wayfare.models import TimeRange  # pylint: disable=C0413
+from wayfare.models import User  # pylint: disable=C0413
+from wayfare.models import Ride  # pylint: disable=C0413
+from wayfare.models import Passenger  # pylint: disable=C0413
 # Necessary for sqlite
 db.drop_all()
 db.create_all()

@@ -1,10 +1,10 @@
-"""The main driver and entrypoint for the Polyrides API."""
+"""The main driver and entrypoint for the Wayfare API."""
 import argparse
 
-from polyrides import app
-from polyrides import api
-from polyrides.routes import users
-from polyrides.routes import rides
+from wayfare import app
+from wayfare import api
+from wayfare.routes import users
+from wayfare.routes import rides
 
 
 def _parse_args() -> argparse.Namespace:

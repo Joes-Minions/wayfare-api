@@ -2,10 +2,10 @@
 """Class wrapping a location table."""
 from typing import TypeVar
 
-from polyrides import db
-from polyrides import models
+from wayfare import db
+from wayfare import models
 
-from polyrides.models import AbstractModelBase
+from wayfare.models import AbstractModelBase
 
 
 LocationType = TypeVar('LocationType', bound='Location')

@@ -1,10 +1,10 @@
-"""Exceptions raised by PolyRides API routes and models."""
+"""Exceptions raised by Wayfare API routes and models."""
 
-class PolyRidesError(Exception):
+class WayfareError(Exception):
     """Base Exception class for all user-defined errors."""
     pass
 
-class DuplicateEmailError(PolyRidesError):
+class DuplicateEmailError(WayfareError):
     """Exception indicating that a `User` email already exists.
 
     Attributes:
@@ -16,7 +16,7 @@ class DuplicateEmailError(PolyRidesError):
         self.message = "Duplicate email: '{}'".format(email)
         super().__init__(self.message)
 
-class InvalidEmailError(PolyRidesError):
+class InvalidEmailError(WayfareError):
     """Exception raised when a provided email value is invalid.
 
     Attributes:
@@ -28,7 +28,7 @@ class InvalidEmailError(PolyRidesError):
         self.message = "Invalid email: '{}'".format(email)
         super().__init__(self.message)
 
-class InvalidFirstNameError(PolyRidesError):
+class InvalidFirstNameError(WayfareError):
     """Exception raised when length of provided first name is invalid."""
 
     def __init__(self, first_name: str):
@@ -36,7 +36,7 @@ class InvalidFirstNameError(PolyRidesError):
         self.message = "Invalid first name: '{}'".format(first_name)
         super().__init__(self.message)
 
-class InvalidLastNameError(PolyRidesError):
+class InvalidLastNameError(WayfareError):
     """Exception raised when length of provided last name is invalid."""
 
     def __init__(self, last_name: str):
@@ -45,7 +45,7 @@ class InvalidLastNameError(PolyRidesError):
         super().__init__(self.message)
 
 # for ride.py
-class InvalidCapacityError(PolyRidesError):
+class InvalidCapacityError(WayfareError):
     """Exception raised capacity is larger than 8."""
 
     def __init__(self, capacity: int):

@@ -2,10 +2,10 @@
 """Class wrapping a status table."""
 from typing import TypeVar
 
-from polyrides import db
-from polyrides import models
+from wayfare import db
+from wayfare import models
 
-from polyrides.models import AbstractModelBase
+from wayfare.models import AbstractModelBase
 
 
 StatusType = TypeVar('StatusType', bound='Status')
@@ -31,7 +31,7 @@ class Status(AbstractModelBase):
 
     @staticmethod
     def find_by_description(description: str) -> StatusType:
-        """Look up a `Status` by descripttion.
+        """Look up a `Status` by description.
 
         Args:
             description: (str): description to match.

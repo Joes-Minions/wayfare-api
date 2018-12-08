@@ -1,7 +1,7 @@
-PolyRides API
+Wayfare API
 =============
 
-The backend of PolyRides, an app for connecting drivers and passengers for long distance road trips.
+The backend of Wayfare, an app for connecting drivers and passengers for long distance road trips.
 
 ## Getting Started
 ### Pre-requisites
@@ -26,23 +26,23 @@ This assumes you are on a Unix-based OS. If you are on Windows then IDK.
     ```bash
     $ pwd
     /path/to/workspace/
-    $ git clone git@github.com:karibennett/polyrides-api.git
-    $ cd polyrides-api
+    $ git clone git@github.com:Joes-Minions/wayfare-api.git
+    $ cd wayfare-api
     $ ls
     Pipfile  Pipfile.lock  README.md    # etc.
     ```
 2. Install requirements:
     ```bash
     $ pwd
-    /path/to/workspace/polyrides-api
+    /path/to/workspace/wayfare-api
     $ pipenv install
     ```
 3. Run it:
     ```bash
     $ pwd 
-    /path/to/workspace/polyrides-api
+    /path/to/workspace/wayfare-api
     $ pipenv shell # This will open a shell within virtualenv.
-    (polyrides-api-xx) $ python app.py
+    (wayfare-api-xx) $ python app.py
     ```
 4. Try it out. _(In another terminal)_:
 - GET the index:
@@ -60,7 +60,7 @@ This assumes you are on a Unix-based OS. If you are on Windows then IDK.
            -H "Content-Type: application/json" \
            -d '{
              "id": 2,
-             "msg": "Kari is so thirsty."
+             "msg": "Kari is thirsty."
            }'
     ```
 - GET test messages again (now with your new message!):

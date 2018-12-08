@@ -1,7 +1,7 @@
 """Unit tests for Location models."""
 import unittest
 
-from polyrides.models import Location
+from wayfare.models import Location
 
 # TODO: Test update, delete methods from AbstractModelBase
 

@@ -4,13 +4,13 @@ import re
 
 from typing import TypeVar
 
-from polyrides import db
-from polyrides import models
-from polyrides.exceptions import DuplicateEmailError
-from polyrides.exceptions import InvalidEmailError
-from polyrides.exceptions import InvalidFirstNameError
-from polyrides.exceptions import InvalidLastNameError
-from polyrides.models import AbstractModelBase
+from wayfare import db
+from wayfare import models
+from wayfare.exceptions import DuplicateEmailError
+from wayfare.exceptions import InvalidEmailError
+from wayfare.exceptions import InvalidFirstNameError
+from wayfare.exceptions import InvalidLastNameError
+from wayfare.models import AbstractModelBase
 
 
 UserType = TypeVar('UserType', bound='User')

@@ -5,6 +5,7 @@ from wayfare import app
 from wayfare import api
 from wayfare.routes import users
 from wayfare.routes import rides
+from wayfare.routes import passengers
 
 
 def _parse_args() -> argparse.Namespace:
@@ -18,7 +19,8 @@ def _parse_args() -> argparse.Namespace:
                         help="The port to listen on.",
                         type=int,
                         default=5000)
-    return parser.parse_args()
+    args = parser.parse_args()
+    return args
 
 
 def main():
@@ -29,10 +31,14 @@ def main():
     api.add_resource(users.UserById, f'{users.BASE_URL}/<int:user_id>')
     api.add_resource(rides.Rides, rides.BASE_URL)
     api.add_resource(rides.RidesById, f'{rides.BASE_URL}/<int:ride_id>')
+    api.add_resource(passengers.Passengers,
+        f'{passengers.BASE_URL}/<int:ride_id>/users')
+    api.add_resource(passengers.PassengersById,
+        f'{passengers.BASE_URL}/<int:ride_id>/users/<int:user_id>')
 
     app.debug = args.debug
     app.run(port=args.port)
-
+    
 
 if __name__ == '__main__':
     main()

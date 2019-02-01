@@ -51,16 +51,17 @@ class Passenger(AbstractModelBase):
         pass
 
     @staticmethod
-    def find_by_id(id: int) -> PassengerType:  # pylint: disable=C0103
-        """Look up a `Passenger` by id.
+    def find_by_id(ride_id: int, user_id: int) -> PassengerType:  # pylint: disable=C0103
+        """Look up a `Passenger` by ride and user id.
 
         Args:
-            id (int): id to match.
+            ride_id (int): ride id to match.
+            user_id (int): user id to match.
 
         Returns:
-            `Passenger`s associated with the given id if found.
+            `Passenger`s associated with the given ids if found.
         """
-        return db.session.query(Passenger).filter(Passenger.id == id).first()
+        return db.session.query(Passenger).filter(Ride.ride_id == ride_id).filter(User.user_id == user_id).first()
 
     @staticmethod
     def find_by_ride_id(ride_id: int) -> List[PassengerType]:
